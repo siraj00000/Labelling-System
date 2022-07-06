@@ -53,7 +53,7 @@ app.use(errorHandler);
 
 let port = process.env.PORT;
 const server = app.listen(port, () => {
-    console.log(`server is running on ${8000}`);
+    console.log(`server is running on ${port}`);
 });
 
 process.on("unhandledRejection", (err, promise) => {
