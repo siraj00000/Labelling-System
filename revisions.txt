@@ -1,0 +1,4 @@
+-selected chip remove icon
+-response company status remove admin word in UI
+auto compress image
+-checkbox must be right align at brand
