@@ -13,12 +13,11 @@ import './brand.css';
 import '../Admin/admin.css';
 import VideoPlayer from '../../../../components/VideoPlayer';
 import Splash from '../../../../components/splash';
-import { removeStatus } from '../../../../utils/actions';
+import { removeStatus, token } from '../../../../utils/actions';
 import { useLocation } from 'react-router-dom';
 
 const EditBrand = () => {
     const { data, id } = useLocation().state;
-    let token = localStorage.getItem('authToken');
     const [isLoading, setLoading] = useState(false);
     // Field States
     const [heading, setHeading] = useState("");

@@ -14,11 +14,10 @@ import './brand.css';
 import '../Admin/admin.css';
 import VideoPlayer from '../../../../components/VideoPlayer';
 import Splash from '../../../../components/splash';
-import { removeStatus } from '../../../../utils/actions';
+import { removeStatus, token } from '../../../../utils/actions';
 
 
 const CreateBrand = () => {
-    let token = localStorage.getItem('authToken');
     const [isLoading, setLoading] = useState(false);
     // Field States
     const [company, setCompany] = useState([]);
@@ -480,6 +479,7 @@ const CreateBrand = () => {
                                 key={index}
                                 src={item}
                                 className={'imageList__img'}
+                                alt={'upload-list'}
                             />
                         ))}
                     </div>

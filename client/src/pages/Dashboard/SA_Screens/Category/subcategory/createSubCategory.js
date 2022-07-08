@@ -9,9 +9,9 @@ import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { fetchCategory } from '../../../../../utils/actions/category';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import { token } from '../../../../../utils/actions';
 
 const CreateSubCategory = () => {
-    let token = localStorage.getItem('authToken');
     // Field States
     const [category, setCategory] = useState([]);
     const [selectedCategory, setselectedCategory] = useState([]);

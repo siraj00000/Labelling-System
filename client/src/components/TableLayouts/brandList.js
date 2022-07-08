@@ -15,7 +15,6 @@ import { DeleteAlert } from '../Sweet_Alerts';
 import { Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { deleteColloction } from '../../utils/actions/category';
-import swal from 'sweetalert';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {

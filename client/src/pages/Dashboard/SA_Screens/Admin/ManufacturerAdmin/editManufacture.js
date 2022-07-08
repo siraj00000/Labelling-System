@@ -4,17 +4,16 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 import Checkbox from '@mui/material/Checkbox';
-import API from '../../../../../API';
 import '../../../../auth/auth.css';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import '../admin.css';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchCompany, updateManufacturer } from '../../../../../utils/actions/companyData';
+import { updateManufacturer } from '../../../../../utils/actions/companyData';
+import { token } from '../../../../../utils/actions';
 
 const EditManufactureAdmin = () => {
-    let token = localStorage.getItem('authToken');
     let nav = useNavigate();
     let { state } = useLocation();
     let { data, id } = state;
@@ -35,8 +34,7 @@ const EditManufactureAdmin = () => {
             pincode,
             manufacturer_active_status,
             phone_one,
-            phone_two,
-            manufacturer_active_status
+            phone_two
         };
         updateManufacturer(url, token, reqBody)
             .then(res => {

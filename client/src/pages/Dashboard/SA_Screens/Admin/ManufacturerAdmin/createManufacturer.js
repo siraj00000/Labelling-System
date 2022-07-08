@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-
 import Checkbox from '@mui/material/Checkbox';
 import API from '../../../../../API';
 import '../../../../auth/auth.css';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-
 import '../admin.css';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchCompany } from '../../../../../utils/actions/companyData';
+import { token } from '../../../../../utils/actions';
+import Splash from '../../../../../components/splash';
 
 const CreateCompanyAdmin = () => {
-    let token = localStorage.getItem('authToken');
     let nav = useNavigate();
     let { state } = useLocation();
     let { connects } = state;
@@ -80,6 +79,10 @@ const CreateCompanyAdmin = () => {
     const handleChange = (event) => {
         setManufactureActiveStatus(event.target.checked);
     };
+
+    if (isLoading) {
+        return <Splash loading={isLoading} />;
+    }
 
     return (
         <form className='form-sec' onSubmit={insertManufacturerAdmin}>

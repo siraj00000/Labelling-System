@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { updateCompanyAdmin } from '../../../../../utils/actions/companyData';
+import { token } from '../../../../../utils/actions';
 import Alert from '@mui/material/Alert';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-
 import Checkbox from '@mui/material/Checkbox';
-import API from '../../../../../API';
-import '../../../../auth/auth.css';
-import { useLocation } from 'react-router-dom';
-
-import '../admin.css';
 import CustomizeTitle from '../../../../../mui_theme/title';
-import { updateCompanyAdmin } from '../../../../../utils/actions/companyData';
+import '../../../../auth/auth.css';
+import '../admin.css';
 
 const EditCompanyAdmin = () => {
-    let token = localStorage.getItem('authToken');
     let { state } = useLocation();
     let { data, id } = state;
     // Field States

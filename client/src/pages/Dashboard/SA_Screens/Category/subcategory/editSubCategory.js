@@ -7,11 +7,11 @@ import CustomizeTitle from '../../../../../mui_theme/title';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { updateSubCategory } from '../../../../../utils/actions/category';
 import { useLocation } from 'react-router-dom';
+import { token } from '../../../../../utils/actions';
 
 const EditSubCategory = () => {
     let { state } = useLocation();
     let { detail, id } = state;
-    let token = localStorage.getItem('authToken');
     // Field States
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');

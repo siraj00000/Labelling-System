@@ -5,9 +5,8 @@ import '../../../../auth/auth.css';
 import { useLocation } from 'react-router-dom';
 import '../../Admin/admin.css';
 import CustomizeTitle from '../../../../../mui_theme/title';
-
+import { token } from '../../../../../utils/actions';
 const EditCategory = () => {
-    let token = localStorage.getItem('authToken');
     const { state } = useLocation();
     let { detail, id } = state;
     // Field States

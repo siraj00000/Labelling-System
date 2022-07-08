@@ -9,12 +9,12 @@
 import { Alert, Button } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import Splash from '../../../../components/splash';
+import { token } from '../../../../utils/actions';
 import { fetchCategory } from '../../../../utils/actions/category';
 import { fetchCompany } from '../../../../utils/actions/companyData';
 import CompanyAdmin from './CompanyAdmin';
 import ManufacturerAdmin from './ManufacturerAdmin';
 const AdminList = () => {
-    let token = localStorage.getItem('authToken');
     const [isLoading, setLoading] = React.useState(false);
     const [isCompanyAdmin, setCompanyAdmin] = useState(true);
     const [hasData, setHasData] = useState(true);

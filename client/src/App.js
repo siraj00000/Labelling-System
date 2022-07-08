@@ -32,16 +32,16 @@ import Brands from './pages/Dashboard/SA_Screens/Brand';
 import CreateBrand from './pages/Dashboard/SA_Screens/Brand/createBrand';
 import BrandDetail from './pages/Dashboard/SA_Screens/Brand/brandDetail';
 import EditBrand from './pages/Dashboard/SA_Screens/Brand/editBrand';
+import { token } from './utils/actions';
 
 const App = () => {
   const [isLoading, setLoading] = useState(false);
-  const isToken = localStorage.getItem("authToken");
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
     }, 3000); // 3000 = 3sec
-  }, [isToken]);
+  }, [token]);
 
   if (isLoading) {
     return <Splash loading={isLoading} />;
@@ -51,7 +51,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={PrivateRoute(isToken, <Dashboard />, "/login")} >
+          <Route path="/" element={PrivateRoute(token, <Dashboard />, "/login")} >
             <Route path='admins' element={<AdminList />} />
             {/* Company admin */}
             <Route path='admins/register-company-admin' element={<RegisterCompanyAdmin />} />
@@ -69,7 +69,7 @@ const App = () => {
             <Route path='category' element={<Category />} />
             <Route path='category/create-category' element={<CreateCategory />} />
             <Route path='category/edit-category' element={<EditCategory />} />
-            
+
             {/* Sub-category */}
             <Route path='subcategory' element={<SubCategory />} />
             <Route path='subcategory/create-subcategory' element={<CreateSubCategory />} />
@@ -83,9 +83,9 @@ const App = () => {
             <Route path='brands/edit-brand' element={<EditBrand />} />
 
           </Route>
-          <Route path="/login" element={PrivateRoute(!isToken, <LoginScreen />, "/")} />
-          <Route path='/forgetpassword' element={PrivateRoute(!isToken, <ForgetPassword />, "/")} />
-          <Route path='/passwordreset/:resetToken' element={PrivateRoute(!isToken, <ResetPassword />, "/")} />
+          <Route path="/login" element={PrivateRoute(!token, <LoginScreen />, "/")} />
+          <Route path='/forgetpassword' element={PrivateRoute(!token, <ForgetPassword />, "/")} />
+          <Route path='/passwordreset/:resetToken' element={PrivateRoute(!token, <ResetPassword />, "/")} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

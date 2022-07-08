@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import API from '../../../../../API';
 import '../../../../auth/auth.css';
-
 import '../../Admin/admin.css';
 import CustomizeTitle from '../../../../../mui_theme/title';
+import { token } from '../../../../../utils/actions';
 
 const CreateCategory = () => {
-    let token = localStorage.getItem('authToken');
     // Field States
     const [category, setCategory] = useState('');
     const [error, setError] = useState('');

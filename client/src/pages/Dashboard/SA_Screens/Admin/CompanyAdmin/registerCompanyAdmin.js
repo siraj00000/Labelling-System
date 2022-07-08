@@ -2,16 +2,15 @@ import React from 'react';
 import { Alert } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../../../../../API';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import { CompanyAdminRegistration } from '../../../../../utils/actions/companyData';
 import '../../../../auth/auth.css';
 
 import '../admin.css';
+import { token } from '../../../../../utils/actions';
 
 const RegisterCompanyAdmin = () => {
     let nav = useNavigate();
-    let token = localStorage.getItem('authToken');
     // Field States
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

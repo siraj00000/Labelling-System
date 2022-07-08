@@ -8,9 +8,9 @@ import API from '../../../../../API';
 import SubCategoryTables from '../../../../../components/TableLayouts/subcategoryList';
 import { fetchCategory } from '../../../../../utils/actions/category';
 import Splash from '../../../../../components/splash';
+import { token } from '../../../../../utils/actions';
 
 const SubCategory = () => {
-    let token = localStorage.getItem('authToken');
     let nav = useNavigate();
     const [_subCategoryList, setSubCategoryList] = useState([]);
     const [isLoading, setLoading] = useState(false);

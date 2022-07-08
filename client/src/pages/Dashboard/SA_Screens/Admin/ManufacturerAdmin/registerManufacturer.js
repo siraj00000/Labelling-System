@@ -1,6 +1,7 @@
 import { Alert } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { token } from '../../../../../utils/actions';
 import API from '../../../../../API';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import '../../../../auth/auth.css';
@@ -8,7 +9,6 @@ import '../admin.css';
 
 const RegisterManufacturer = () => {
   let nav = useNavigate();
-  let token = localStorage.getItem('authToken');
   // Field States
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

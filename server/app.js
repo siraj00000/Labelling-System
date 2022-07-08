@@ -16,6 +16,7 @@ const { privateRoute } = require('./router/privateRoute');
 const subCategoryRouter = require("./router/subcategoryRouter");
 const uploadRouter = require("./router/uploadImage");
 const { options } = require("./router/uploadImage");
+const statusRouter = require("./router/networkStatus");
 
 const app = express();
 app.use(express.json());
@@ -46,6 +47,9 @@ app.use("/api", manufactureRouter);
 app.use("/api", brandRouter);
 
 app.use("/api", uploadRouter);
+
+// Network Status
+app.use("/", statusRouter);
 
 // Error Handler (should be the last piece of middleware)
 app.use(errorHandler);

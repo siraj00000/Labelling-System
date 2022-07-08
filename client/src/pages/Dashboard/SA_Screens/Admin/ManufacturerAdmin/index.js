@@ -8,15 +8,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { Alert, Box, CircularProgress, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { token } from '../../../../../utils/actions';
 import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import API from '../../../../../API';
-import TableLayout from '../../../../../components/TableLayouts/companyList';
-import '../admin.css';
-import { useNavigate } from 'react-router-dom';
 import ManufacturerList from '../../../../../components/TableLayouts/manufactureList';
-import Splash from '../../../../../components/splash';
+import '../admin.css';
 
 const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
   let nav = useNavigate();
@@ -24,13 +23,12 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
   const [isResponse, setResponse] = useState('');
   const [error, setError] = useState('');
   const [canProceed, setCanProceed] = useState("");
-  let token = localStorage.getItem('authToken');
 
   useEffect(() => {
     if (companyDetail?.length === 0) {
       setCanProceed(false);
     } else {
-      setCanProceed(true)
+      setCanProceed(true);
     }
   }, [companyDetail]);
 
@@ -63,9 +61,9 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
   }, []);
 
   if (!canProceed) {
-    return <Alert severity="warning" style={{marginTop: 10}}>Empty company list</Alert> 
+    return <Alert severity="warning" style={{ marginTop: 10 }}>Empty company list</Alert>;
   }
-  
+
   return (
     <div className='ca_container'>
       {/* Error Alert */}

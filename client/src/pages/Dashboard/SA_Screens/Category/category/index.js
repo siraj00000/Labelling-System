@@ -7,10 +7,10 @@ import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { fetchCategory } from '../../../../../utils/actions/category';
 import Splash from '../../../../../components/splash';
+import { token } from '../../../../../utils/actions';
 
 const Category = () => {
     let nav = useNavigate();
-    let token = localStorage.getItem('authToken');
     const [isLoading, setLoading] = useState(false);
     const [_categoryList, setCategoryList] = useState([]);
     const [isResponse, setResponse] = useState('');

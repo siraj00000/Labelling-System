@@ -13,7 +13,6 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { DeleteAlert } from '../Sweet_Alerts';
 import { Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import API from '../../API';
 import { deleteColloction } from '../../utils/actions/category';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({

@@ -1,8 +1,10 @@
 const logoutHandler = () => {
     localStorage.removeItem("authToken");
-    document.location = "/"
-}
+    document.location = "/";
+};
 
 const removeStatus = func => setTimeout(() => func(""), 3000);
 
-export { logoutHandler, removeStatus }
+const token = localStorage.getItem('authToken');
+
+export { logoutHandler, removeStatus, token };

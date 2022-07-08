@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import Alert from '@mui/material/Alert';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-
-import Checkbox from '@mui/material/Checkbox';
-import AddIcon from '@mui/icons-material/Add';
-import API from '../../../../../API';
-import '../../../../auth/auth.css';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import CloseIcon from '@mui/icons-material/Close';
-import '../admin.css';
-import CustomizeTitle from '../../../../../mui_theme/title';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchSubCategory } from '../../../../../utils/actions/category';
 import { CompanyAdminInsert } from '../../../../../utils/actions/companyData';
+import { token } from '../../../../../utils/actions';
+import Alert from '@mui/material/Alert';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CloseIcon from '@mui/icons-material/Close';
+import CustomizeTitle from '../../../../../mui_theme/title';
+import '../../../../auth/auth.css';
+import '../admin.css';
 
 const CreateCompanyAdmin = () => {
     let { state } = useLocation();
     let { company_email } = state;
-
-    let token = localStorage.getItem('authToken');
 
     let nav = useNavigate();
     // Field States

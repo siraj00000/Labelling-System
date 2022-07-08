@@ -5,17 +5,17 @@ import { Alert, Box, Button, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { fetchBrands } from '../../../../utils/actions/brand';
+import { token } from '../../../../utils/actions';
 import BrandsTables from '../../../../components/TableLayouts/brandList';
 import Splash from '../../../../components/splash';
 
 const Brands = () => {
     let nav = useNavigate();
-    let token = localStorage.getItem('authToken');
     const [isLoading, setLoading] = React.useState(false);
     const [brandsList, setBrands] = useState([]);
     const [isResponse, setResponse] = useState('');
     const [error, setError] = useState('');
-   
+
     useEffect(() => {
         const getBrands = async () => {
             setResponse("0");
@@ -34,7 +34,7 @@ const Brands = () => {
         getBrands();
     }, [isLoading]);
 
-    const toggleLoader = sign => setLoading(sign)
+    const toggleLoader = sign => setLoading(sign);
 
     if (isLoading) {
         setTimeout(() => {

@@ -14,10 +14,10 @@ import CustomizeTitle from '../../../../../mui_theme/title';
 import TableLayout from '../../../../../components/TableLayouts/companyList';
 import '../admin.css';
 import { useNavigate } from 'react-router-dom';
+import { token } from '../../../../../utils/actions';
 
 const CompanyAdmin = ({ companyDetail, isResponse, error, toggleLoader }) => {
   let nav = useNavigate();
-  let token = localStorage.getItem('authToken');
 
   return (
     <div className='ca_container'>
