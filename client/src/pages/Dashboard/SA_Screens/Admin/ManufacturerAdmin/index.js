@@ -16,6 +16,7 @@ import CustomizeTitle from '../../../../../mui_theme/title';
 import API from '../../../../../API';
 import ManufacturerList from '../../../../../components/TableLayouts/manufactureList';
 import '../admin.css';
+import Searchbar from '../../../../../components/Searchbar';
 
 const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
   let nav = useNavigate();
@@ -23,6 +24,7 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
   const [isResponse, setResponse] = useState('');
   const [error, setError] = useState('');
   const [canProceed, setCanProceed] = useState("");
+  const [search, setSearch] = React.useState('');
 
   useEffect(() => {
     if (companyDetail?.length === 0) {
@@ -64,6 +66,14 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
     return <Alert severity="warning" style={{ marginTop: 10 }}>Empty company list</Alert>;
   }
 
+  const manufactureFilter = manufactureDetail?.filter(list => {
+    return (
+      list.manufacturer_name
+        .toLowerCase()
+        .indexOf(search.toLowerCase()) !== -1
+    );
+  });
+
   return (
     <div className='ca_container'>
       {/* Error Alert */}
@@ -74,8 +84,9 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
         <CustomizeTitle text={'Manufacturer'} />
 
         {/* Add company admin */}
-        <Box>
+        <Box className='direction'>
           <Button variant="text" onClick={() => window.location.reload(false)}><AutorenewIcon /></Button>
+          <Searchbar handler={setSearch} />
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -97,7 +108,7 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
 
       {/* Table */}
       {manufactureDetail.length !== 0 &&
-        <ManufacturerList detail={manufactureDetail} token={token} toggleLoader={toggleLoader} />
+        <ManufacturerList detail={manufactureFilter} token={token} toggleLoader={toggleLoader} />
       }
     </div>
   );

@@ -33,6 +33,7 @@ import CreateBrand from './pages/Dashboard/SA_Screens/Brand/createBrand';
 import BrandDetail from './pages/Dashboard/SA_Screens/Brand/brandDetail';
 import EditBrand from './pages/Dashboard/SA_Screens/Brand/editBrand';
 import { token } from './utils/actions';
+import ViewManufacturerAdmin from './pages/Dashboard/SA_Screens/Admin/ManufacturerAdmin/viewManufacturer';
 
 const App = () => {
   const [isLoading, setLoading] = useState(false);
@@ -64,6 +65,7 @@ const App = () => {
             <Route path='admins/view-manufacturer' element={<ManufacturerAdmin />} />
             <Route path='admins/create-manufacturer' element={<CreateManufacturer />} />
             <Route path='admins/edit-manufacturer' element={<EditManufactureAdmin />} />
+            <Route path='admins/manufacturer-detail' element={<ViewManufacturerAdmin />} />
 
             {/* Category */}
             <Route path='category' element={<Category />} />

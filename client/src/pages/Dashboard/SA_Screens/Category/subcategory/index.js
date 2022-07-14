@@ -9,6 +9,7 @@ import SubCategoryTables from '../../../../../components/TableLayouts/subcategor
 import { fetchCategory } from '../../../../../utils/actions/category';
 import Splash from '../../../../../components/splash';
 import { token } from '../../../../../utils/actions';
+import Searchbar from '../../../../../components/Searchbar';
 
 const SubCategory = () => {
     let nav = useNavigate();
@@ -18,6 +19,7 @@ const SubCategory = () => {
     const [isResponse, setResponse] = useState('');
     const [error, setError] = useState('');
     const [hasData, setHasData] = React.useState(true);
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         fetchCategory(token)
@@ -70,6 +72,14 @@ const SubCategory = () => {
 
     if (!hasData) return <Alert severity='warning'>Make sure you have categories.</Alert>;
 
+    const subCategoryFilter = _subCategoryList?.filter(list => {
+        return (
+            list.sub_category
+                .toLowerCase()
+                .indexOf(search.toLowerCase()) !== -1
+        );
+    });
+
     return (
         <div style={{ width: '80%' }}>
             <div className='company_admin_title_and_btn'>
@@ -77,8 +87,9 @@ const SubCategory = () => {
                 <CustomizeTitle text={'Sub Category'} />
 
                 {/* Add company admin */}
-                <Box>
+                <Box className='direction'>
                     <Button variant="text" onClick={() => window.location.reload(false)}><AutorenewIcon /></Button>
+                    <Searchbar handler={setSearch} />
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
@@ -102,7 +113,7 @@ const SubCategory = () => {
 
 
             {_subCategoryList.length !== 0 &&
-                <SubCategoryTables data={_subCategoryList} token={token} category={category} toggleLoader={toggleLoader} />
+                <SubCategoryTables data={subCategoryFilter} token={token} category={category} toggleLoader={toggleLoader} />
             }
         </div>
     );

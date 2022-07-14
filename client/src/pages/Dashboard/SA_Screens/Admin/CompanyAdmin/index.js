@@ -6,7 +6,7 @@
  * @func Delete Company Admin
  */
 
-import React, {  } from 'react';
+import React, { } from 'react';
 import { Alert, Box, CircularProgress, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
@@ -15,9 +15,19 @@ import TableLayout from '../../../../../components/TableLayouts/companyList';
 import '../admin.css';
 import { useNavigate } from 'react-router-dom';
 import { token } from '../../../../../utils/actions';
+import Searchbar from '../../../../../components/Searchbar';
 
 const CompanyAdmin = ({ companyDetail, isResponse, error, toggleLoader }) => {
   let nav = useNavigate();
+  const [search, setSearch] = React.useState('');
+
+  const companyFilter = companyDetail?.filter(list => {
+    return (
+      list.company_name
+        .toLowerCase()
+        .indexOf(search.toLowerCase()) !== -1
+    );
+  });
 
   return (
     <div className='ca_container'>
@@ -29,14 +39,23 @@ const CompanyAdmin = ({ companyDetail, isResponse, error, toggleLoader }) => {
         <CustomizeTitle text={'Company'} />
 
         {/* Add company admin */}
-        <Box>
+        <Box className='direction'>
           <Button variant="text" onClick={() => window.location.reload(false)}><AutorenewIcon /></Button>
+          <Searchbar handler={setSearch} />
           <Button
             variant="contained"
             startIcon={<AddIcon />}
+            style={{margin: "0 5px"}}
             onClick={() => nav(`register-company-admin`,)}
           >
             Company Admin
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => nav(`create-company-admin`,)}
+          >
+            Company
           </Button>
         </Box>
       </div>
@@ -52,7 +71,7 @@ const CompanyAdmin = ({ companyDetail, isResponse, error, toggleLoader }) => {
 
       {/* Table */}
       {companyDetail.length !== 0 &&
-        <TableLayout detail={companyDetail} token={token} toggleLoader={toggleLoader} />
+        <TableLayout detail={companyFilter} token={token} toggleLoader={toggleLoader} />
       }
     </div>
   );

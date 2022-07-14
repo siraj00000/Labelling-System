@@ -40,7 +40,7 @@ export default function ManufacturerList({ detail, token, toggleLoader }) {
 
     let nav = useNavigate();
     // View detail
-    const viewhandler = (item) => { nav(`detail`, { state: { data: item, type: 'Manufacturer' } }); };
+    const viewhandler = (item) => { nav(`manufacturer-detail`, { state: { data: item, type: 'Manufacturer' } }); };
 
     // Edit collection 
     const edithandler = (id, item) => {

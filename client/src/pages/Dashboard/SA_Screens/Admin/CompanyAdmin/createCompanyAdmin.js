@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchSubCategory } from '../../../../../utils/actions/category';
 import { CompanyAdminInsert } from '../../../../../utils/actions/companyData';
 import { token } from '../../../../../utils/actions';
@@ -8,18 +7,14 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import AddIcon from '@mui/icons-material/Add';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CloseIcon from '@mui/icons-material/Close';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import '../../../../auth/auth.css';
 import '../admin.css';
 
 const CreateCompanyAdmin = () => {
-    let { state } = useLocation();
-    let { company_email } = state;
-
-    let nav = useNavigate();
     // Field States
+    const [company_email, setCompanyEmail] = useState('');
     const [company_name, setCompanyName] = useState('');
     const [pincode, setPincode] = useState(0);
     const [phone_one, setPhoneOne] = useState(0);
@@ -76,7 +71,7 @@ const CreateCompanyAdmin = () => {
                     }, 5000);
                 });
         } catch (error) {
-            setError(error.message)
+            setError(error.message);
         }
     };
 
@@ -112,9 +107,6 @@ const CreateCompanyAdmin = () => {
 
     return (
         <form className='form-sec' onSubmit={insertCompanyAdmin}>
-            <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-                onClick={() => nav(-2)}
-            ><ArrowBackIcon sx={{ color: '#583e81' }} />Back</label>
             <CustomizeTitle text={'Add Company'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
             {success !== '' && <Alert severity="success">{success}</Alert>}
@@ -122,6 +114,10 @@ const CreateCompanyAdmin = () => {
                 <div className='company_admin_form_field'>
                     <label>Company *</label>
                     <input placeholder='xyz...' value={company_name} onChange={e => setCompanyName(e.target.value)} required />
+                </div>
+                <div className='company_admin_form_field'>
+                    <label>Company Email *</label>
+                    <input placeholder='xyz@gmail.com...' value={company_email} onChange={e => setCompanyEmail(e.target.value)} required />
                 </div>
 
                 <div className='company_admin_form_field'>
@@ -163,20 +159,21 @@ const CreateCompanyAdmin = () => {
                 </div>
 
                 <div className='company_admin_form_field'>
-                    {sub_category.length !== 0 && <>
-                        <label>Selected Sub Category</label>
-                        <div className='sub-catory-list_not_seleted'>
-                            {sub_category?.map((item, index) => {
-                                return (
-                                    <p
-                                        key={index}
-                                        onClick={() => unSelectSubCat(item, index)}
-                                        className='sub-category-chips _selected'
-                                    >{item?.category_name} <CloseIcon /></p>
-                                );
-                            })}
-                        </div>
-                    </>
+                    {sub_category.length !== 0 &&
+                        <>
+                            <label>Selected Sub Category</label>
+                            <div className='sub-catory-list_not_seleted'>
+                                {sub_category?.map((item, index) => {
+                                    return (
+                                        <p
+                                            key={index}
+                                            onClick={() => unSelectSubCat(item, index)}
+                                            className='sub-category-chips _selected'
+                                        >{item?.sub_category} <CloseIcon /></p>
+                                    );
+                                })}
+                            </div>
+                        </>
                     }
                     {category.length !== 0 &&
                         <>
@@ -188,7 +185,7 @@ const CreateCompanyAdmin = () => {
                                             key={index}
                                             onClick={() => selectSubCat(item, index)}
                                             className='sub-category-chips _selected'
-                                        >{item?.category_name} <AddIcon /></p>
+                                        >{item?.sub_category} <AddIcon /></p>
                                     );
                                 })}
                             </div>

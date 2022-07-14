@@ -8,6 +8,7 @@ import { fetchBrands } from '../../../../utils/actions/brand';
 import { token } from '../../../../utils/actions';
 import BrandsTables from '../../../../components/TableLayouts/brandList';
 import Splash from '../../../../components/splash';
+import Searchbar from '../../../../components/Searchbar';
 
 const Brands = () => {
     let nav = useNavigate();
@@ -15,6 +16,7 @@ const Brands = () => {
     const [brandsList, setBrands] = useState([]);
     const [isResponse, setResponse] = useState('');
     const [error, setError] = useState('');
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         const getBrands = async () => {
@@ -43,6 +45,14 @@ const Brands = () => {
         return <Splash loading={isLoading} />;
     }
 
+    const brandFilter = brandsList?.filter(list => {
+        return (
+            list.brand
+                .toLowerCase()
+                .indexOf(search.toLowerCase()) !== -1
+        );
+    });
+
     return (
         <div style={{ width: '100%' }}>
             <div className='company_admin_title_and_btn'>
@@ -50,8 +60,9 @@ const Brands = () => {
                 <CustomizeTitle text={'Brands'} />
 
                 {/* Add company admin */}
-                <Box>
+                <Box className='direction'>
                     <Button variant="text" onClick={() => window.location.reload(false)}><AutorenewIcon /></Button>
+                    <Searchbar handler={setSearch} />
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
@@ -74,7 +85,7 @@ const Brands = () => {
             )}
 
             {brandsList.length !== 0 &&
-                <BrandsTables data={brandsList} token={token} toggleLoader={toggleLoader} />
+                <BrandsTables data={brandFilter} token={token} toggleLoader={toggleLoader} />
             }
         </div>
     );

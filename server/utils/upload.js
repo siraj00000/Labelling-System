@@ -58,7 +58,7 @@ const uploadImage = (file, next) => {
 const verifyImageSizaAndtype = async (file, next) => {
     // 1024*1024 = 1mb
     // file must be less than 1mb
-    if (file.size > 1024 * 1024) {
+    if (file.size > 50000000) {
         removeTmp(file.tempFilePath);
         return next(new ErrorResponse("Size too large", 400));
     }

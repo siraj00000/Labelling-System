@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
+// @mui
 import Alert from '@mui/material/Alert';
 import CustomizeTitle from '../../../../mui_theme/title';
+import { Button, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+// utils
 import { insertBrand } from '../../../../utils/actions/brand';
 import { fetchCompany } from '../../../../utils/actions/companyData';
+import { removeStatus, token } from '../../../../utils/actions';
 // Mui icons
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
-import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 // styles
 import '../../../auth/auth.css';
 import './brand.css';
 import '../Admin/admin.css';
 import VideoPlayer from '../../../../components/VideoPlayer';
 import Splash from '../../../../components/splash';
-import { removeStatus, token } from '../../../../utils/actions';
+import swal from 'sweetalert';
+import { AppButton } from '../../../../components/StyledComponent';
 
 
 const CreateBrand = () => {
@@ -73,25 +77,21 @@ const CreateBrand = () => {
             setError("Images not found!");
             removeStatus(setError);
             return false;
-        } else if (videoURL === "" && selectedVideo === "") {
-            setError("Video not found!");
-            removeStatus(setError);
-            return false;
         } else return true;
     };
-
     const insertBrandDetail = async (e) => {
         e.preventDefault();
-
+        
         //TODO: Verify images and video uploads
         const verify = verifyUploads();
         if (verify) {
             try {
                 setLoading(true);
+                let emptyVideo = videoURL === '' && selectedVideo === ''
                 let reqBody = {
                     company_id, brand, brand_active_status, carousel_headings, carousel_text, product_description, authentication_feature,
                     warranty, request_help, survey_feature, survey_link, promo_code, referrals, re_order_link, email_support, email_id,
-                    call_support, call_no, whatsapp_support, whatsapp_number, instagram, insta_link, facebook, fb_link, videoURL
+                    call_support, call_no, whatsapp_support, whatsapp_number, instagram, insta_link, facebook, fb_link, videoURL, emptyVideo
                 };
 
                 const formData = new FormData();
@@ -136,10 +136,21 @@ const CreateBrand = () => {
     };
 
     const handleUploadImage = event => {
+        let files = event.target.files;
+        if (Array.from(files).length > 7) {
+            swal({
+                title: `${files.length} images`,
+                text: `Cannot upload images more then 7`,
+                icon: `info`,
+                buttons: `Try Again`
+            });
+            return false;
+        }
+
         let images = [];
         let imageDetail = [];
-        for (let i = 0; i < event.target.files.length; i++) {
-            let file = event.target.files[i];
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
             images.push(URL.createObjectURL(file));
             imageDetail.push(file);
         }
@@ -148,10 +159,32 @@ const CreateBrand = () => {
     };
 
     const handleUploadVideo = event => {
+        let file = event.target.files[0]
+        if (file.size > 50000000) {
+            swal({
+                title: `${Math.floor((file.size)/1000000)}MB Size`,
+                text: `Cannot upload video upto 50mb`,
+                icon: `info`,
+                buttons: `Try Again`
+            });
+            return false;
+        }
         if (videoURL !== '') return false;
-        let video = URL.createObjectURL(event.target.files[0]);
+        let video = URL.createObjectURL(file);
         setVideo(video);
-        setSelectedVideo(event.target.files[0]);
+        setSelectedVideo(file);
+    };
+
+    const removeImageHandler = index => {
+        const list = [...uploadedImageList];
+        list.splice(index, 1);
+        setUploadedImageList(list);
+    };
+
+    const deleteVideoHandler = () => {
+        setVideo("");
+        setVideoURL("");
+        setSelectedVideo("");
     };
 
     if (isLoading) {
@@ -255,10 +288,47 @@ const CreateBrand = () => {
                             <input placeholder='http://facebook...' value={fb_link} onChange={e => setFbLink(e.target.value)} />
                         </div>}
                     </div>
-                    <button style={{ width: "100%", margin: '5% 0' }}>Create Brand</button>
+
+                    {/* Uploaded Images */}
+                    <div style={{ width: "40%", marginTop: '2%' }}>
+                        <div className='upload-btns-group'>
+                            <div>
+                                <div className="upload-btn-wrapper">
+                                    <FileUploadOutlinedIcon
+                                        color="primary"
+                                        sx={{ fontSize: 30 }}
+                                    />
+                                    <span>Images</span>
+                                    <input type="file" onChange={handleUploadImage} multiple accept='image/*' />
+                                </div>
+                                <h6 className='subscript'>Max 7 Images Limit</h6>
+                            </div>
+                            <div>
+                                <div className="upload-btn-wrapper" >
+                                    <FileUploadOutlinedIcon
+                                        color="primary"
+                                        sx={{ fontSize: 30 }}
+                                    />
+                                    <span>Video</span>
+                                    <input type="file" onChange={handleUploadVideo} accept='video/*' disabled={videoURL !== ''} />
+                                </div>
+                                <h6 className='subscript'>Max 50mbs video Limit</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <button style={{ width: "100%", marginBottom: '5%' }}>Create Brand</button>
+                    {/* Submit Button */}
+
                     {videoURL === '' && video_url !== '' && (
                         <div className='uploaded-video'>
                             <VideoPlayer source={video_url} />
+                            <AppButton
+                                Icon={CloseIcon}
+                                Text={"Delete Video"}
+                                Method={deleteVideoHandler}
+                            />
                         </div>
                     )}
                     {videoURL !== '' &&
@@ -271,6 +341,11 @@ const CreateBrand = () => {
                                 frameBorder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             ></iframe>
+                            <AppButton
+                                Icon={CloseIcon}
+                                Text={"Delete Video"}
+                                Method={deleteVideoHandler}
+                            />
                         </div>
                     }
                 </section>
@@ -454,33 +529,31 @@ const CreateBrand = () => {
                             }
                         </div>
 
-                        <div className='upload-btns-group'>
-                            <div className="upload-btn-wrapper">
-                                <FileUploadOutlinedIcon
-                                    color="primary"
-                                    sx={{ fontSize: 30 }}
-                                />
-                                <span>Images</span>
-                                <input type="file" onChange={handleUploadImage} multiple accept='image/*' />
-                            </div>
-                            <div className="upload-btn-wrapper" >
-                                <FileUploadOutlinedIcon
-                                    color="primary"
-                                    sx={{ fontSize: 30 }}
-                                />
-                                <span>Video</span>
-                                <input type="file" onChange={handleUploadVideo} accept='video/*' disabled={videoURL !== ''} />
-                            </div>
-                        </div>
                     </div>
                     <div className={'imageList'}>
                         {uploadedImageList.length !== 0 && uploadedImageList?.map((item, index) => (
-                            <img
+                            <div
                                 key={index}
-                                src={item}
-                                className={'imageList__img'}
-                                alt={'upload-list'}
-                            />
+                                className='imageList__container'
+                                onClick={() => removeImageHandler(index)}
+                            >
+                                <img
+                                    src={item}
+                                    className={'imageList__img'}
+                                    alt={'imageList__img'}
+                                />
+                                <div>
+                                    <CloseIcon color={"secondary"}
+                                        sx={{
+                                            fontSize: 15,
+                                            width: 20,
+                                            height: 20,
+                                            borderRadius: 30,
+                                            bgcolor: '#000'
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </section>
@@ -488,5 +561,7 @@ const CreateBrand = () => {
         </form>
     );
 };
+
+
 
 export default CreateBrand;

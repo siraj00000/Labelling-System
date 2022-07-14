@@ -73,9 +73,9 @@ export default function TableLayout({ detail, token, toggleLoader }) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {detail?.map((row, index) => {
+                    {detail?.map((row) => {
                         return (
-                            <StyledTableRow key={index}>
+                            <StyledTableRow key={row?._id}>
                                 <StyledTableCell align="center">{row.company_name}</StyledTableCell>
                                 <StyledTableCell align="center">{row.company_email}</StyledTableCell>
                                 <StyledTableCell align="center">{row.pincode}</StyledTableCell>

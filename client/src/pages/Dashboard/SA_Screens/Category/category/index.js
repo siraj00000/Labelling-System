@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Alert, Box, Button, CircularProgress } from '@mui/material';
+import { token } from '../../../../../utils/actions';
+import { fetchCategory } from '../../../../../utils/actions/category';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import CategoryTables from '../../../../../components/TableLayouts/categoryList';
-import { Alert, Box, Button, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { fetchCategory } from '../../../../../utils/actions/category';
 import Splash from '../../../../../components/splash';
-import { token } from '../../../../../utils/actions';
+import Searchbar from '../../../../../components/Searchbar';
 
 const Category = () => {
     let nav = useNavigate();
@@ -15,7 +16,8 @@ const Category = () => {
     const [_categoryList, setCategoryList] = useState([]);
     const [isResponse, setResponse] = useState('');
     const [error, setError] = useState('');
-    
+    const [search, setSearch] = useState('');
+
     useEffect(() => {
         const getCategory = async () => {
             setResponse("0");
@@ -43,6 +45,14 @@ const Category = () => {
         return <Splash loading={isLoading} />;
     }
 
+    const categoryFilter = _categoryList?.filter(list => {
+        return (
+            list.category_name
+                .toLowerCase()
+                .indexOf(search.toLowerCase()) !== -1
+        );
+    });
+
     return (
         <div style={{ width: '80%' }}>
             <div className='company_admin_title_and_btn'>
@@ -50,8 +60,9 @@ const Category = () => {
                 <CustomizeTitle text={'Category'} />
 
                 {/* Add company admin */}
-                <Box>
+                <Box className='direction'>
                     <Button variant="text" onClick={() => window.location.reload(false)}><AutorenewIcon /></Button>
+                    <Searchbar handler={setSearch} />
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
@@ -74,7 +85,7 @@ const Category = () => {
             )}
 
             {_categoryList.length !== 0 &&
-                <CategoryTables data={_categoryList} token={token} toggleLoader={toggleLoader} />
+                <CategoryTables data={categoryFilter} token={token} toggleLoader={toggleLoader} />
             }
         </div>
     );

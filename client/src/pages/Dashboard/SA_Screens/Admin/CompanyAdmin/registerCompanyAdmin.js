@@ -3,23 +3,38 @@ import { Alert } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomizeTitle from '../../../../../mui_theme/title';
-import { CompanyAdminRegistration } from '../../../../../utils/actions/companyData';
+import { CompanyAdminRegistration, fetchCompany } from '../../../../../utils/actions/companyData';
 import '../../../../auth/auth.css';
 
 import '../admin.css';
-import { token } from '../../../../../utils/actions';
+import { removeStatus, token } from '../../../../../utils/actions';
 
 const RegisterCompanyAdmin = () => {
-    let nav = useNavigate();
     // Field States
+    const [company, setCompany] = useState([]);
+    const [company_email, setCompanyEmail] = useState("");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const [company_email, setCompanyEmail] = useState('');
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+    React.useEffect(() => {
+        try {
+            fetchCompany(token)
+                .then(res => {
+                    setCompany(res.data?.data);
+                })
+                .catch(error => {
+                    setError(error?.response.data.error);
+                    removeStatus(setError);
+                });
+        } catch (error) {
+            setError(error);
+            removeStatus(setError);
+        }
+    }, []);
 
     const registerAdmin = async (e) => {
         e.preventDefault();
@@ -31,7 +46,6 @@ const RegisterCompanyAdmin = () => {
                 setTimeout(() => {
                     setSuccess("");
                 }, 5000);
-                nav('/admins/create-company-admin', { state: { company_email } });
             })
             .catch(error => {
                 setError(error);
@@ -59,8 +73,20 @@ const RegisterCompanyAdmin = () => {
                     <input type={'password'} placeholder='mark123' value={password} onChange={e => setPassword(e.target.value)} required />
                 </div>
                 <div className='company_admin_form_field'>
-                    <label>Company Email</label>
-                    <input placeholder='company@example.com' value={company_email} onChange={e => setCompanyEmail(e.target.value)} required />
+                    <label>Company</label>
+                    <select onChange={(e) => setCompanyEmail(e.target.value)} required>
+                        <option value="">select company</option>
+                        {company.map((item, index) => {
+                            return (
+                                <option
+                                    key={index}
+                                    value={item?.company_email}
+                                    className='company_list'>
+                                    {item?.company_name}
+                                </option>
+                            );
+                        })}
+                    </select>
                 </div>
             </div>
             <button>Register Company Admin</button>

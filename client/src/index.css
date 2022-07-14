@@ -31,3 +31,9 @@ code {
   width: 80%;
   z-index: 1111;
 }
+
+.direction{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

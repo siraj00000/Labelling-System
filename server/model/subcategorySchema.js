@@ -8,6 +8,7 @@ const subcategorySchema = new Schema({
     category_name: {
         type: String,
         required: [true, "Please provide valid category name for sub-category"],
+        unique: true
     },
     sub_category: {
         type: String,

@@ -19,6 +19,25 @@ export const fetchCompany = async (token) => {
     });
 };
 
+export const fetchAdmins = async (token, formData) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await API({
+                method: 'POST',
+                url: `/api/fetch-admin`,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                data: formData
+            });
+            resolve(response);
+        } catch (error) {
+            reject(error?.response.data.error);
+        }
+    });
+};
+
 // Insert Company admin
 export const CompanyAdminInsert = async (token, detail) => {
     return new Promise(async (resolve, reject) => {

@@ -36,24 +36,26 @@ export default function BrandDetail() {
     return (
         <>
             <section className='brandDetai__video_and_images'>
-                <div>
-                    <h3>Video</h3>
-                    {data.video_url?.public_id !== '' ?
-                        <VideoPlayer source={data?.video_url.url} />
-                        :
-                        <div className='brandDetail__video_container'>
-                            <iframe
-                                width="100%"
-                                height="100%"
-                                src={data?.video_url.url}
-                                title="YouTube video player"
-                                frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            ></iframe>
-                        </div>
-                    }
-                </div>
-                <div style={{marginBottom: 15}}>
+                {Object.keys(data?.video_url).length !== 0 &&
+                    <div>
+                        <h3>Video</h3>
+                        {data.video_url?.public_id !== '' ?
+                            <VideoPlayer source={data?.video_url?.url} />
+                            :
+                            <div className='brandDetail__video_container'>
+                                <iframe
+                                    width="100%"
+                                    height="100%"
+                                    src={data?.video_url?.url}
+                                    title="YouTube video player"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                ></iframe>
+                            </div>
+                        }
+                    </div>
+                }
+                <div style={{ marginBottom: 15 }}>
                     <h3>Images</h3>
                     <div className='brandDetail__imageList'>
                         {data?.image_list?.map((item) => {

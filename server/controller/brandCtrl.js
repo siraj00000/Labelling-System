@@ -7,16 +7,17 @@ const { uploadImagesToCloudinary, uploadVideoToCloudinary, destroyImageFromCloud
 const brandCtrl = {
     insertBrand: async (req, res, next) => {
         try {
-            res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+            res.set("Access-Control-Allow-Origin", "http://34.211.164.116");
 
             //? Parse body data  
             let body = JSON.parse(req.body.reqBody);
+
 
             // Note: image and video word must provide as field name 
             let file = req.files.image;
             let video = req.files.video;
 
-            const { company_id, videoURL } = body;
+            const { company_id, videoURL, emptyVideo } = body;
 
             //*TODO: find company detail in db according to company_id
             const company = await CompanyAdmin.findById({ _id: company_id });
@@ -37,12 +38,16 @@ const brandCtrl = {
              * @response will provide video link from cloudinary then store in db
              * @error error occurence, will stop to procceed further 
              * */
-            if (videoURL === '') {
-                const videoUploadRes = await uploadVideoToCloudinary(video, next);
-                if (!videoUploadRes || videoUploadRes === 0) return next(new ErrorResponse('Video not uploaded!', 404));
-                body["video_url"] = videoUploadRes;
+            if (emptyVideo) {
+                body["video_url"] = "";
             } else {
-                body["video_url"] = { url: videoURL, public_id: '' };
+                if (videoURL === '') {
+                    const videoUploadRes = await uploadVideoToCloudinary(video, next);
+                    if (!videoUploadRes || videoUploadRes === 0) return next(new ErrorResponse('Video not uploaded!', 404));
+                    body["video_url"] = videoUploadRes;
+                } else {
+                    body["video_url"] = { url: videoURL, public_id: '' };
+                }
             }
 
             body["company_name"] = company?.company_name;
@@ -76,7 +81,7 @@ const brandCtrl = {
     updateBrandInfo: async (req, res, next) => {
         // Note: image and video word must provide as field name in the formData
         try {
-            res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+            res.set("Access-Control-Allow-Origin", "http://34.211.164.116");
 
             const { id } = req.params;
             if (!id) return next(new ErrorResponse("Invalid brand entry!", 401));

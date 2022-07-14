@@ -1,4 +1,5 @@
 const CompanyAdmin = require("../model/companyAdminSchema");
+const User = require("../model/userSchema");
 const ErrorResponse = require("../utils/errorResponse");
 
 const companyAdminDetail = {
@@ -23,6 +24,23 @@ const companyAdminDetail = {
 
             if (companyAdminDetail)
                 res.status(200).json({ success: true, msg: "Detail fetched!", data: companyAdminDetail });
+        } catch (error) {
+            next(error);
+        }
+    },
+    fetchAdmins: async (req, res, next) => {
+        try {
+            const { company_email } = req.body;
+            if (!company_email) return next(new ErrorResponse("No company admin found!", 400));
+
+            const admins = await User.where({ company_email: company_email }).find();
+            if (admins) {
+                res.status(200).json({
+                    success: true,
+                    msg: "Company Admins Fetched!",
+                    data: admins
+                });
+            }
         } catch (error) {
             next(error);
         }

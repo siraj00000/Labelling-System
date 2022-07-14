@@ -85,7 +85,6 @@
 .uploaded-video {
   height: 400px;
   width: 100%;
-  display: flex;
 }
 
 .video-react-video {
@@ -158,4 +157,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.subscript{
+  font-size: 10px;
+  color: var(--primary_color);
 }

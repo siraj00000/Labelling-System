@@ -10,7 +10,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchCompany } from '../../../../../utils/actions/companyData';
-import { token } from '../../../../../utils/actions';
+import { removeStatus, token } from '../../../../../utils/actions';
 import Splash from '../../../../../components/splash';
 
 const CreateCompanyAdmin = () => {
@@ -38,9 +38,13 @@ const CreateCompanyAdmin = () => {
                 .then(res => {
                     setCompany(res.data?.data);
                 })
-                .catch(err => console.log(err));
+                .catch(error => {
+                    setError(error?.response.data.error);
+                    removeStatus(setError);
+                });
         } catch (error) {
             setError(error);
+            removeStatus(setError);
         } finally {
             setLoading(false);
         }
