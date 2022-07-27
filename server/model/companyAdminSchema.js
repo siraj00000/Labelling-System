@@ -26,12 +26,14 @@ const companyAdminSchema = new mongoose.Schema({
     phone_one: {
         type: Number,
         trim: true,
-        default: null
+        default: null,
+        minlength: 10
     },
     phone_two: {
         type: Number,
         trim: true,
-        default: null
+        default: null,
+        minlength: 10
     },
     company_active_status: {
         type: Boolean,
@@ -49,7 +51,7 @@ const companyAdminSchema = new mongoose.Schema({
     {
         timestamps: true,
     }
-)
+);
 
 const CompanyAdmin = mongoose.model("company_admin", companyAdminSchema);
-module.exports = CompanyAdmin
+module.exports = CompanyAdmin;

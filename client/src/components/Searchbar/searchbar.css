@@ -38,4 +38,5 @@
   border-radius: 50em;
   background: url('../../assets/images/cancel.png') no-repeat 50% 50%;
   background-size: contain;
+  cursor: pointer;
 }

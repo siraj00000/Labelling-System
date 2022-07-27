@@ -10,8 +10,9 @@ const LoginScreen = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    useEffect(() => {
+    useEffect((e) => {
         if (localStorage.getItem('authToken')) {
+            e.preventDefault();
             document.location = "/";
         }
     }, []);

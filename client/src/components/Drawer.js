@@ -14,9 +14,7 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import GridViewIcon from '@mui/icons-material/GridView';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import DiamondIcon from '@mui/icons-material/Diamond';
-import LogoutIcon from '@mui/icons-material/Logout';
 import {useNavigate} from 'react-router-dom'
-import { logoutHandler } from '../utils/actions';
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -89,12 +87,7 @@ const AppDrawer = ({ open, setOpen }) => {
             routeName: "Brand",
             Icon: DiamondIcon,
             handler: () => navigationHandler("/brands")
-        },
-        {
-            routeName: "Logout",
-            Icon: LogoutIcon,
-            handler: logoutHandler
-        },
+        }
     ]
 
     const handleDrawerClose = () => {

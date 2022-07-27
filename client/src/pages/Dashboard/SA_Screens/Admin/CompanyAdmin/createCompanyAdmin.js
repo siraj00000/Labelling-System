@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchSubCategory } from '../../../../../utils/actions/category';
 import { CompanyAdminInsert } from '../../../../../utils/actions/companyData';
-import { token } from '../../../../../utils/actions';
+import { removeStatus, token } from '../../../../../utils/actions';
 import Alert from '@mui/material/Alert';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -30,7 +30,8 @@ const CreateCompanyAdmin = () => {
 
     useEffect(() => {
         try {
-            fetchSubCategory(token)
+            let URL = `/api/fetch-subcategory`
+            fetchSubCategory(token, URL)
                 .then(res => setCategory(res.data?.data))
                 .catch(err => setError(err));
         } catch (error) {
@@ -41,8 +42,33 @@ const CreateCompanyAdmin = () => {
         }
     }, []);
 
+    const clearStates = () => {
+        setCompanyEmail("");
+        setCompanyName("");
+        setPincode(0);
+        setPhoneOne(0);
+        setPhoneTwo(0);
+        setRegisteredAddress("");
+        setEstaiblishmentYear("");
+        setCompanyActiveStatus("");
+        setSubCategory([]);
+        setCompanyActiveStatus(true);
+    };
+    const verifyFieldValues = () => {
+        if (pincode.length !== 6) {
+            setError("Pincode must have 6 digits");
+            removeStatus(setError);
+            return false;
+        } else if (phone_one.length > 10 || phone_two.length > 10) {
+            setError("Phone number exceeding from 10 digits");
+            removeStatus(setError);
+            return false;
+        } else return true;
+    };
     const insertCompanyAdmin = async (e) => {
         e.preventDefault();
+        let verify = verifyFieldValues();
+        if (!verify) return false;
 
         try {
             const bodyData = {
@@ -60,15 +86,12 @@ const CreateCompanyAdmin = () => {
             CompanyAdminInsert(token, bodyData)
                 .then(res => {
                     setSuccess(res?.data.msg);
-                    setTimeout(() => {
-                        setSuccess("");
-                    }, 5000);
+                    removeStatus(setSuccess);
+                    clearStates();
                 })
                 .catch(error => {
                     setError(error);
-                    setTimeout(() => {
-                        setError("");
-                    }, 5000);
+                    removeStatus(setError);
                 });
         } catch (error) {
             setError(error.message);

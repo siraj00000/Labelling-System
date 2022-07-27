@@ -71,12 +71,12 @@ export const uploadBrandImageAndVideo = async (token, detail) => {
 };
 
 // Fetch Brand
-export const fetchBrands = async (token) => {
+export const fetchBrands = async (token, url) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await API({
                 method: 'GET',
-                url: '/api/fetch-brands',
+                url,
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -93,8 +93,6 @@ export const fetchBrands = async (token) => {
 export const deleteContentFromCloudinary = async (url, token, imageList) => {
     for (let index = 0; index < imageList.length; index++) {
         const public_id = imageList[index]?.public_id;
-        console.log(public_id);
-
         await API.delete(url, public_id, {
             headers: {
                 "Content-Type": "application/json",

@@ -1,14 +1,27 @@
 const Category = require("../model/categorySchema");
 const ErrorResponse = require("../utils/errorResponse");
+const csv = require('fast-csv');
+const fs = require('fs');
+const Apifeatures = require("../utils/ApiFeaturer");
+const VerifyPagination = require("../utils/actions");
 
 const categoryCtrl = {
     fetchCategory: async (req, res, next) => {
         try {
-            const category = await Category.find();
+            const search = req.query.category_name || "";
+            const features = new Apifeatures(Category.find({ category_name: { $regex: search, $options: 'i' } }), req.query)
+                .sorting().paginating();
+            const category = await features.query;
+
+            let total = await Category.countDocuments();
+            let pages = await VerifyPagination(req, total);
+
+            if (!pages) return next(new ErrorResponse('No page found', 404));
 
             res.status(200).json({
                 success: true,
                 data: category,
+                pages,
                 msg: "Categories fetched!",
 
             });
@@ -62,6 +75,50 @@ const categoryCtrl = {
                 success: true,
                 data: "Category deleted!"
             });
+        } catch (error) {
+            next(error);
+        }
+    },
+    generateCSV: async (req, res, next) => {
+        try {
+            const search = req.query.category_name || "";
+            const features = new Apifeatures(Category.find({ category_name: { $regex: search, $options: 'i' } }), req.query)
+                .sorting()
+                .paginating();
+            const sub_category = await features.query;
+
+            const csvStream = csv.format({ headers: true });
+
+            if (!fs.existsSync('public/files/export')) {
+                if (!fs.existsSync('public/files')) {
+                    fs.mkdirSync('public/files');
+                }
+                if (!fs.existsSync('public/files/export')) {
+                    fs.mkdirSync('public/files/export');
+                }
+            }
+
+            const writableStream = fs.createWriteStream('public/files/export/category.csv');
+
+            csvStream.pipe(writableStream);
+
+            writableStream.on("finish", () => {
+                res.status(200).json({
+                    downloadURL: 'files/export/category.csv'
+                });
+            });
+
+            if (sub_category.length > 0) {
+                sub_category.map(catg => {
+                    csvStream.write({
+                        Category: catg.category_name || '-',
+                        CreatedAt: catg.createdAt || '-'
+                    });
+                });
+            }
+
+            csvStream.end();
+            writableStream.end();
         } catch (error) {
             next(error);
         }

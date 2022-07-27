@@ -39,18 +39,21 @@ export default function ManufacturerList({ detail, token, toggleLoader }) {
     const [error, setError] = React.useState('');
 
     let nav = useNavigate();
-    // View detail
-    const viewhandler = (item) => { nav(`manufacturer-detail`, { state: { data: item, type: 'Manufacturer' } }); };
+
+    // View Detail
+    const viewHandler = item => {
+        nav(`manufacturer-detail`, { state: { data: item, type: 'Manufacturer' } });
+    };
 
     // Edit collection 
-    const edithandler = (id, item) => {
+    const editHandler = (id, item) => {
         if (id) {
             nav(`edit-manufacturer`, { state: { data: item, id } });
         }
     };
 
     // Delete collection
-    const deletehandler = (id, email ) => {
+    const deleteHandler = (id, email) => {
         try {
             let url = `/api/delete-manufacturer-admin/${id}`;
             const deleteRow = deleteColloction;
@@ -81,13 +84,13 @@ export default function ManufacturerList({ detail, token, toggleLoader }) {
                         {detail?.map((row) => {
                             return (
                                 <StyledTableRow key={row._id}>
-                                    <StyledTableCell align="center">{row.manufacturer_name}</StyledTableCell>
+                                    <StyledTableCell align="center">{row.manufacturer}</StyledTableCell>
                                     <StyledTableCell align="center">{row.manufacturer_email}</StyledTableCell>
                                     <StyledTableCell align="center">{row.company_name}</StyledTableCell>
                                     <StyledTableCell align="center">{row.pincode}</StyledTableCell>
-                                    <StyledTableCell align="center" onClick={() => viewhandler(row)}><VisibilityIcon sx={{ cursor: 'pointer' }} /></StyledTableCell>
-                                    <StyledTableCell align="center" onClick={() => edithandler(row?._id, row)}><EditIcon sx={{ cursor: 'pointer' }} /></StyledTableCell>
-                                    <StyledTableCell align="center" onClick={() => deletehandler(row?._id, row.manufacturer_email)}><DeleteForeverIcon sx={{ cursor: 'pointer' }} /></StyledTableCell>
+                                    <StyledTableCell align="center" onClick={() => viewHandler(row)}><VisibilityIcon sx={{ cursor: 'pointer' }} /></StyledTableCell>
+                                    <StyledTableCell align="center" onClick={() => editHandler(row?._id, row)}><EditIcon sx={{ cursor: 'pointer' }} /></StyledTableCell>
+                                    <StyledTableCell align="center" onClick={() => deleteHandler(row?._id, row.manufacturer_email)}><DeleteForeverIcon sx={{ cursor: 'pointer' }} /></StyledTableCell>
                                 </StyledTableRow>
                             );
                         })}

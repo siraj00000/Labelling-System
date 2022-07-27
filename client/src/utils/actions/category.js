@@ -1,12 +1,12 @@
 import API from "../../API";
 
 // Fetch
-export const fetchCategory = async (token) => {
+export const fetchCategory = async (token, url) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await API({
                 method: 'GET',
-                url: '/api/category',
+                url,
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -32,13 +32,12 @@ export const deleteColloction = async (url, token) => {
 };
 
 
-/*-------------SUB CATEGORY-----------------*/ 
-export const fetchSubCategory = async (token) => {
+/*-------------SUB CATEGORY-----------------*/
+export const fetchSubCategory = async (token, url) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await API({
-                method: 'GET',
-                url: '/api/fetch-subcategory',
+                method: 'GET', url,
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`

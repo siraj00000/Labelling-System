@@ -1,7 +1,6 @@
 import React from 'react';
 import { Alert } from '@mui/material';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import { CompanyAdminRegistration, fetchCompany } from '../../../../../utils/actions/companyData';
 import '../../../../auth/auth.css';
@@ -22,7 +21,8 @@ const RegisterCompanyAdmin = () => {
 
     React.useEffect(() => {
         try {
-            fetchCompany(token)
+            let companyURL = `/api/fetch-company-admin`
+            fetchCompany(token, companyURL)
                 .then(res => {
                     setCompany(res.data?.data);
                 })
@@ -36,22 +36,33 @@ const RegisterCompanyAdmin = () => {
         }
     }, []);
 
+    const clearStates = () => {
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        setCompanyEmail("");
+    };
+
+
     const registerAdmin = async (e) => {
         e.preventDefault();
-
+        // Password Verification
+        if (password.length < 5) {
+            setError("Password must contain at least 6 digits");
+            removeStatus(setError);
+            return false;
+        };
+        // Data posting
         let bodyData = { username, email, password, role: 2, company_email };
         CompanyAdminRegistration(token, bodyData)
             .then(res => {
                 setSuccess(res.data?.msg);
-                setTimeout(() => {
-                    setSuccess("");
-                }, 5000);
+                removeStatus(setSuccess);
+                clearStates();
             })
             .catch(error => {
                 setError(error);
-                setTimeout(() => {
-                    setError("");
-                }, 5000);
+                removeStatus(setError);
             });
     };
     return (
@@ -76,7 +87,7 @@ const RegisterCompanyAdmin = () => {
                     <label>Company</label>
                     <select onChange={(e) => setCompanyEmail(e.target.value)} required>
                         <option value="">select company</option>
-                        {company.map((item, index) => {
+                        {company?.map((item, index) => {
                             return (
                                 <option
                                     key={index}

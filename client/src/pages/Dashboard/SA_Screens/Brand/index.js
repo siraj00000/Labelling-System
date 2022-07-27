@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CustomizeTitle from '../../../../mui_theme/title';
 import { Alert, Box, Button, CircularProgress } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { fetchBrands } from '../../../../utils/actions/brand';
-import { token } from '../../../../utils/actions';
+import { removeStatus, token } from '../../../../utils/actions';
+import CustomizeTitle from '../../../../mui_theme/title';
+import AddIcon from '@mui/icons-material/Add';
 import BrandsTables from '../../../../components/TableLayouts/brandList';
 import Splash from '../../../../components/splash';
 import Searchbar from '../../../../components/Searchbar';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { downloadCSV } from '../../../../utils/actions/sub-actions';
+import { SERVER_URL } from '../../../../utils/constants';
+import Pagination from '../../../../components/Pagination';
 
 const Brands = () => {
     let nav = useNavigate();
@@ -17,13 +20,17 @@ const Brands = () => {
     const [isResponse, setResponse] = useState('');
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const getBrands = async () => {
             setResponse("0");
-            fetchBrands(token)
+            let URL = `/api/fetch-brands?brand=${search}&page=${page}&limit=3`;
+            fetchBrands(token, URL)
                 .then(res => {
                     setBrands(res?.data?.data);
+                    setTotalPages(res?.data?.pages);
                     if (res?.data?.data.length === 0) {
                         setResponse('Collection is Empty');
                     } else {
@@ -34,7 +41,7 @@ const Brands = () => {
         };
 
         getBrands();
-    }, [isLoading]);
+    }, [isLoading, search, page]);
 
     const toggleLoader = sign => setLoading(sign);
 
@@ -45,24 +52,47 @@ const Brands = () => {
         return <Splash loading={isLoading} />;
     }
 
-    const brandFilter = brandsList?.filter(list => {
-        return (
-            list.brand
-                .toLowerCase()
-                .indexOf(search.toLowerCase()) !== -1
-        );
-    });
-
+    const generateCSV = async () => {
+        try {
+            let url = `/api/generate-brand-csv?brand=${search}&page=${page}`;
+            downloadCSV(token, url)
+                .then(({ data }) => {
+                    window.open(SERVER_URL + data?.downloadURL, '_parent');
+                }).catch(error => {
+                    setError(error);
+                    removeStatus(setError);
+                });
+        } catch (error) {
+            setError(error);
+            removeStatus(setError);
+        }
+    };
+    const searchHandler = (value) => {
+        setSearch(value);
+        setPage(1);
+    }
     return (
         <div style={{ width: '100%' }}>
             <div className='company_admin_title_and_btn'>
-                {/* Tittle */}
-                <CustomizeTitle text={'Brands'} />
+                <div className='direction' onClick={() => setPage(page + 1)}>
+                    {/* Tittle */}
+                    <CustomizeTitle text={'Brands'} />
+                    {isResponse === '1' || (isResponse.length <= 1 &&
+                        <CircularProgress size={25} sx={{ ml: 1 }} />
+                    )}
+                </div>
 
                 {/* Add company admin */}
                 <Box className='direction'>
-                    <Button variant="text" onClick={() => window.location.reload(false)}><AutorenewIcon /></Button>
-                    <Searchbar handler={setSearch} />
+                    <Searchbar handler={searchHandler} />
+                    <Button
+                        variant="contained"
+                        startIcon={<FileDownloadIcon />}
+                        onClick={generateCSV}
+                        sx={{ mr: '5px' }}
+                    >
+                        CSV
+                    </Button>
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
@@ -76,17 +106,13 @@ const Brands = () => {
             {error !== '' && <Alert severity="error">{error}</Alert>}
 
             {/* Responser */}
-            {isResponse !== '1' && ((isResponse === "0") || (isResponse === "") ?
-                <Box sx={{ display: 'flex' }}>
-                    <CircularProgress />
-                </Box>
-                :
-                <Alert severity="warning">{isResponse}</Alert>
-            )}
+            {isResponse.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
 
             {brandsList.length !== 0 &&
-                <BrandsTables data={brandFilter} token={token} toggleLoader={toggleLoader} />
+                <BrandsTables data={brandsList} token={token} toggleLoader={toggleLoader} />
             }
+
+            <Pagination count={totalPages} setPage={setPage} page={page} />
         </div>
     );
 };

@@ -1,6 +1,10 @@
 const CompanyAdmin = require("../model/companyAdminSchema");
 const User = require("../model/userSchema");
 const ErrorResponse = require("../utils/errorResponse");
+const csv = require('fast-csv');
+const fs = require('fs');
+const Apifeatures = require("../utils/ApiFeaturer");
+const VerifyPagination = require("../utils/actions");
 
 const companyAdminDetail = {
     insertCompanyAdminDetail: async (req, res, next) => {
@@ -20,7 +24,15 @@ const companyAdminDetail = {
     },
     fetchCompanyAdminDetail: async (req, res, next) => {
         try {
-            const companyAdminDetail = await CompanyAdmin.find();
+            const search = req.query.company_name || "";
+            const features = new Apifeatures(CompanyAdmin.find({ company_name: { $regex: search, $options: 'i' } }), req.query)
+                .sorting().paginating();
+            const companyAdminDetail = await features.query;
+
+            let total = await CompanyAdmin.countDocuments();
+            let pages = await VerifyPagination(req, total);
+
+            if (!pages) return next(new ErrorResponse('No page found', 404));
 
             if (companyAdminDetail)
                 res.status(200).json({ success: true, msg: "Detail fetched!", data: companyAdminDetail });
@@ -75,6 +87,57 @@ const companyAdminDetail = {
                 success: true,
                 msg: "Company deleted!"
             });
+        } catch (error) {
+            next(error);
+        }
+    },
+    generateCSV: async (req, res, next) => {
+        try {
+            const search = req.query.company_name || "";
+            const features = new Apifeatures(CompanyAdmin.find({ company_name: { $regex: search, $options: 'i' } }), req.query)
+                .sorting().paginating();
+            const companyAdminDetail = await features.query;
+
+            const csvStream = csv.format({ headers: true });
+
+            if (!fs.existsSync('public/files/export')) {
+                if (!fs.existsSync('public/files')) {
+                    fs.mkdirSync('public/files');
+                }
+                if (!fs.existsSync('public/files/export')) {
+                    fs.mkdirSync('public/files/export');
+                }
+            }
+
+            const writableStream = fs.createWriteStream('public/files/export/company.csv');
+
+            csvStream.pipe(writableStream);
+
+            writableStream.on("finish", () => {
+                res.status(200).json({
+                    downloadURL: 'files/export/company.csv'
+                });
+            });
+
+            if (companyAdminDetail.length > 0) {
+                companyAdminDetail.map(com => {
+                    csvStream.write({
+                        Company_Email: com.company_email || '-',
+                        Company_Name: com.company_name || '-',
+                        Pincode: com.pincode || '-',
+                        Registered_Address: com.registered_address || '-',
+                        Phone_One: com.phone_one || '-',
+                        Phone_Two: com.phone_two || '-',
+                        Company_Active_Status: com.company_active_status || '-',
+                        Estaiblishment_Year: com.estaiblishment_year || '-',
+                        Sub_Category: com.sub_category || '-',
+                        CreatedAt: com.createdAt || '-'
+                    });
+                });
+            }
+
+            csvStream.end();
+            writableStream.end();
         } catch (error) {
             next(error);
         }

@@ -2,7 +2,11 @@ const { response } = require("express");
 const Brand = require("../model/brandSchema");
 const CompanyAdmin = require("../model/companyAdminSchema");
 const ErrorResponse = require("../utils/errorResponse");
+const csv = require('fast-csv');
+const fs = require('fs');
 const { uploadImagesToCloudinary, uploadVideoToCloudinary, destroyImageFromCloudinary } = require("../utils/upload");
+const Apifeatures = require("../utils/ApiFeaturer");
+const VerifyPagination = require("../utils/actions");
 
 const brandCtrl = {
     insertBrand: async (req, res, next) => {
@@ -68,11 +72,21 @@ const brandCtrl = {
     },
     fetchBrands: async (req, res, next) => {
         try {
-            const brandList = await Brand.find();
+            const search = req.query.brand || "";
+            const features = new Apifeatures(Brand.find({ brand: { $regex: search, $options: 'i' } }), req.query)
+                .sorting().paginating();
+            const brandList = await features.query;
+
+            let total = await Brand.countDocuments();
+            let pages = await VerifyPagination(req, total);
+
+            if (!pages) return next(new ErrorResponse('No page found', 404));
+
             if (brandList) {
                 res.status(200).json({
                     success: true,
-                    msg: "Brands Fetched!",
+                    result: brandList.length,
+                    pages,
                     data: brandList
                 });
             }
@@ -83,7 +97,7 @@ const brandCtrl = {
     updateBrandInfo: async (req, res, next) => {
         // Note: image and video word must provide as field name in the formData
         try {
-            res.set("Access-Control-Allow-Origin", "http://localhost:3000");
+            res.set("Access-Control-Allow-Origin", "http://localhost:8000");
 
             const { id } = req.params;
             if (!id) return next(new ErrorResponse("Invalid brand entry!", 401));
@@ -197,6 +211,72 @@ const brandCtrl = {
 
         } catch (error) {
             console.log(error);
+            next(error);
+        }
+    },
+    generateCSV: async (req, res, next) => {
+        try {
+            const search = req.query.brand || "";
+            const features = new Apifeatures(Brand.find({ brand: { $regex: search, $options: 'i' } }), req.query)
+                .sorting().paginating();
+            const brand = await features.query;
+
+            const csvStream = csv.format({ headers: true });
+
+            if (!fs.existsSync('public/files/export')) {
+                if (!fs.existsSync('public/files')) {
+                    fs.mkdirSync('public/files');
+                }
+                if (!fs.existsSync('public/files/export')) {
+                    fs.mkdirSync('public/files/export');
+                }
+            }
+
+            const writableStream = fs.createWriteStream('public/files/export/brand.csv');
+
+            csvStream.pipe(writableStream);
+
+            writableStream.on("finish", () => {
+                res.status(200).json({
+                    downloadURL: 'files/export/brand.csv'
+                });
+            });
+
+            if (brand.length > 0) {
+                brand.map(item => {
+                    csvStream.write({
+                        Brand: item.brand || '-',
+                        Company: item.company_name || '-',
+                        Active: item.brand_active_status || '-',
+                        Headings: item.carousel_headings || '-',
+                        Text: item.carousel_text || '-',
+                        Description: item.product_description || '-',
+                        AuthenticFeature: item.authentication_feature || '-',
+                        Warranty: item.warranty || '-',
+                        RequestForHelp: item.request_help || '-',
+                        SurveyFeature: item.survey_feature || '-',
+                        SurveyLink: item.survey_link || '-',
+                        Promocode: item.promo_code || '-',
+                        Referrals: item.referrals || '-',
+                        ReOrderLink: item.re_order_link || '-',
+                        EmailSupport: item.email_support || '-',
+                        Email: item.email_id || '-',
+                        CallSupport: item.call_support || '-',
+                        CallNum: item.call_no || '-',
+                        WhatsappSuport: item.whatsapp_support || '-',
+                        WhatsappNumber: item.whatsapp_number || '-',
+                        Instagram: item.instagram || '-',
+                        InstaLink: item.insta_link || '-',
+                        Facebook: item.facebook || '-',
+                        FacebookLink: item.fb_link || '-',
+                        CreatedAt: item.createdAt || '-'
+                    });
+                });
+            }
+
+            csvStream.end();
+            writableStream.end();
+        } catch (error) {
             next(error);
         }
     }

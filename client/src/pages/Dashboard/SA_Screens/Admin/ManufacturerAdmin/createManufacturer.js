@@ -1,24 +1,21 @@
 import React, { useState } from 'react';
+import { fetchCompany } from '../../../../../utils/actions/companyData';
+import { removeStatus, token } from '../../../../../utils/actions';
+import API from '../../../../../API';
+import Splash from '../../../../../components/splash';
+import '../../../../auth/auth.css';
+import '../admin.css';
+// MUI Components
 import Alert from '@mui/material/Alert';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import API from '../../../../../API';
-import '../../../../auth/auth.css';
-import '../admin.css';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CustomizeTitle from '../../../../../mui_theme/title';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { fetchCompany } from '../../../../../utils/actions/companyData';
-import { removeStatus, token } from '../../../../../utils/actions';
-import Splash from '../../../../../components/splash';
 
 const CreateCompanyAdmin = () => {
-    let nav = useNavigate();
-    let { state } = useLocation();
-    let { connects } = state;
-
     // Field States
+    const [manufacturer_email, setManufacturerEmail] = useState('');
+    const [manufacturer, setManufacturer] = useState('');
     const [pincode, setPincode] = useState(0);
     const [manufacturer_active_status, setManufactureActiveStatus] = useState(true);
     const [phone_one, setPhoneOne] = useState(0);
@@ -34,7 +31,8 @@ const CreateCompanyAdmin = () => {
     React.useEffect(() => {
         try {
             setLoading(true);
-            fetchCompany(token)
+            let companyURL = `/api/fetch-company-admin`;
+            fetchCompany(token, companyURL)
                 .then(res => {
                     setCompany(res.data?.data);
                 })
@@ -49,9 +47,33 @@ const CreateCompanyAdmin = () => {
             setLoading(false);
         }
     }, []);
+    // Clear Form after submit
+    const clearStates = () => {
+        setCompanySign('');
+        setRegisteredAddress('');
+        setPhoneOne(0);
+        setPhoneTwo(0);
+        setManufactureActiveStatus(true);
+        pincode(0);
+    };
+
+    const verifyFieldValues = () => {
+        if (pincode.length !== 6) {
+            setError("Pincode must have 6 digits");
+            removeStatus(setError);
+            return false;
+        } else if (phone_one.length > 10 || phone_two.length > 10) {
+            setError("Phone number exceeding from 10 digits");
+            removeStatus(setError);
+            return false;
+        } else return true;
+    };
 
     const insertManufacturerAdmin = async (e) => {
         e.preventDefault();
+        let verify = verifyFieldValues();
+        if (!verify) return false;
+
         const config = {
             headers: {
                 "Content-Type": "application/json",
@@ -61,22 +83,16 @@ const CreateCompanyAdmin = () => {
 
         try {
             const { data } = await API.post("api/insert-manufacturer-admin", {
-                manufacturer_email: connects?.email,
-                manufacturer_name: connects?.username,
-                company_id: companySign,
-                pincode,
-                manufacturer_active_status
+                manufacturer_email, manufacturer, company_id: companySign,
+                pincode, manufacturer_active_status
             }, config);
 
             setSuccess(data?.msg);
-            setTimeout(() => {
-                setSuccess("");
-            }, 5000);
+            clearStates();
+            removeStatus(setSuccess);
         } catch (error) {
             setError(error?.response.data.error);
-            setTimeout(() => {
-                setError("");
-            }, 5000);
+            removeStatus(setError);
         }
     };
 
@@ -90,13 +106,20 @@ const CreateCompanyAdmin = () => {
 
     return (
         <form className='form-sec' onSubmit={insertManufacturerAdmin}>
-            <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-                onClick={() => nav(-2)}
-            ><ArrowBackIcon sx={{ color: '#583e81' }} />Back</label>
-            <CustomizeTitle text={'Add Manufacturer Admin'} />
+            <CustomizeTitle text={'Add Manufacturer'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
             {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form'>
+                <div className='company_admin_form_field'>
+                    <label>Manufacturer</label>
+                    <input placeholder='ABC manufacturer...' value={manufacturer} onChange={e => setManufacturer(e.target.value)} required />
+                </div>
+
+                <div className='company_admin_form_field'>
+                    <label>Manufacturer Email</label>
+                    <input placeholder='xyz@manufacturer.com' value={manufacturer_email} onChange={e => setManufacturerEmail(e.target.value)} required />
+                </div>
+
                 <div className='company_admin_form_field'>
                     <label>Pincode</label>
                     <input placeholder='392032' value={pincode || ''} onChange={e => setPincode(e.target.value)} required />

@@ -14,7 +14,7 @@ import { token } from '../../../../../utils/actions';
 const CreateSubCategory = () => {
     // Field States
     const [category, setCategory] = useState([]);
-    const [selectedCategory, setselectedCategory] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState([]);
     const [sub_category, setSubCategory] = useState('');
     const [feature, setFeature] = useState('');
     const [featureList, setFeatureList] = useState([]);
@@ -23,12 +23,27 @@ const CreateSubCategory = () => {
     const [sub_category_active_status, setSubCategoryActiveStatus] = useState(true);
 
     useEffect(() => {
-        fetchCategory(token)
+        let URL = `/api/category`
+        fetchCategory(token, URL)
             .then(res => {
                 setCategory(res?.data?.data);
             })
             .catch(error => setError(error?.response.data.error));
     }, []);
+
+    const clearStates = () => {
+        setSubCategory("");
+        setFeature("");
+        setFeatureList([]);
+        setSubCategoryActiveStatus(true);
+        setSelectedCategory([]);
+        let URL = `/api/category`
+        fetchCategory(token, URL)
+            .then(res => {
+                setCategory(res?.data?.data);
+            })
+            .catch(error => setError(error?.response.data.error));
+    };
 
     const insertCompanyAdmin = async (e) => {
         e.preventDefault();
@@ -51,6 +66,7 @@ const CreateSubCategory = () => {
             }, config);
 
             setSuccess(data?.msg);
+            clearStates();
             setError("");
             setTimeout(() => {
                 setSuccess("");
@@ -62,7 +78,7 @@ const CreateSubCategory = () => {
             setTimeout(() => {
                 setError("");
             }, 5000);
-        } 
+        }
     };
 
     const handleChange = (event) => {
@@ -86,7 +102,7 @@ const CreateSubCategory = () => {
     const selectParentCategory = (ctg, index) => {
         let _list = [...selectedCategory];
         _list.push(ctg);
-        setselectedCategory(_list);
+        setSelectedCategory(_list);
 
         let _category = [...category];
         _category.splice(index, 1);
@@ -100,7 +116,7 @@ const CreateSubCategory = () => {
 
         let _list = [...selectedCategory];
         _list.splice(index, 1);
-        setselectedCategory(_list);
+        setSelectedCategory(_list);
     };
 
     return (

@@ -1,19 +1,19 @@
-import React from 'react'
-import BeatLoader from "react-spinners/BeatLoader";
+import React, { useEffect, useState } from 'react';
+import ScaleLoader from "react-spinners/ScaleLoader";
 
-const Splash = ({ loading }) => {
+const Splash = (token) => {
+    const [isLoading, setLoading] = useState(false);
+    useEffect(() => {
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+        }, 3000); // 3000 = 3sec
+    }, [token]);
     return (
-        <div
-            style={{
-                width: "95%",
-                height: "50vh",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-            }}>
-            <BeatLoader color={"#583e81"} loading={loading} size={30} />
+        <div className='direction splash-styling1'>
+            <ScaleLoader color={"#583e81"} loading={isLoading} />
         </div>
-    )
-}
+    );
+};
 
-export default Splash
+export default Splash;

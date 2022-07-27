@@ -24,7 +24,8 @@ const AdminList = () => {
 
     useEffect(() => {
         // Fetching Category Method
-        fetchCategory(token)
+        let URL = `/api/category`
+        fetchCategory(token, URL)
             .then(res => {
                 if (res.data?.data.length === 0) {
                     setHasData(false);
@@ -33,7 +34,8 @@ const AdminList = () => {
             .catch(err => console.log(err));
 
         // Fetching Company Method
-        fetchCompany(token)
+        let companyURL = `/api/fetch-company-admin`
+        fetchCompany(token, companyURL)
             .then(res => {
                 setCompanyDetail(res?.data?.data);
                 if (res?.data?.data.length === 0) {
@@ -73,7 +75,6 @@ const AdminList = () => {
                 onClick={() => setCompanyAdmin(false)}
             >Manufacturer</Button>
             {isCompanyAdmin && <CompanyAdmin
-                companyDetail={companyDetail}
                 isResponse={isResponse}
                 error={error}
                 toggleLoader={toggleLoader}

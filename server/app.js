@@ -1,6 +1,7 @@
 require("dotenv").config();
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const path = require("path");
 const express = require("express");
 const fileUpload = require("express-fileupload");
 const connectMongoDb = require("./config/db");
@@ -45,6 +46,9 @@ app.use("/api", manufactureRouter);
 
 // Brand
 app.use("/api", brandRouter);
+
+// Download CSV
+app.use("/files", express.static(path.join(__dirname, 'public/files')));
 
 app.use("/api", uploadRouter);
 

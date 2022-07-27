@@ -5,7 +5,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
+import { logoutHandler } from '../utils/actions';
+import { Box } from '@mui/material';
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -59,6 +62,21 @@ const TopAppbar = ({ open, setOpen }) => {
                     >
                         {hasAdminRole}
                     </Typography>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            right: 20,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: '5px'
+                        }}
+                        onClick={logoutHandler}
+                    >
+                        <LogoutIcon />
+                        <Typography>Logout</Typography>
+                    </Box>
                 </Toolbar>
             </AppBar>
         </div>

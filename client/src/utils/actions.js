@@ -1,4 +1,5 @@
-const logoutHandler = () => {
+const logoutHandler = (e) => {
+    e.preventDefault();
     localStorage.removeItem("authToken");
     document.location = "/";
 };

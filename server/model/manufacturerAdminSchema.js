@@ -10,10 +10,11 @@ const manufacturerAdminSchema = new Schema({
             `Please fill valid email address`
         ],
     },
-    manufacturer_name: {
+    manufacturer: {
         type: String,
         required: [true, 'Please provide a manufacturer name'],
-        trim: true
+        trim: true,
+        unique: true
     },
     company_id: {
         type: String,

@@ -6,46 +6,97 @@
  * @func Delete Company Admin
  */
 
-import React, { } from 'react';
+import React, { useState } from 'react';
 import { Alert, Box, CircularProgress, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import TableLayout from '../../../../../components/TableLayouts/companyList';
 import '../admin.css';
 import { useNavigate } from 'react-router-dom';
-import { token } from '../../../../../utils/actions';
+import { removeStatus, token } from '../../../../../utils/actions';
 import Searchbar from '../../../../../components/Searchbar';
+import Pagination from '../../../../../components/Pagination';
+import { downloadCSV } from '../../../../../utils/actions/sub-actions';
+import { SERVER_URL } from '../../../../../utils/constants';
+import { fetchCompany } from '../../../../../utils/actions/companyData';
 
-const CompanyAdmin = ({ companyDetail, isResponse, error, toggleLoader }) => {
+const CompanyAdmin = ({ isResponse:RES, error: err, toggleLoader }) => {
   let nav = useNavigate();
-  const [search, setSearch] = React.useState('');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [companyDetail, setCompanyDetail] = useState([]);
+  const [error, setError] = useState(err);
+  const [isResponse, setResponse] = useState(RES);
 
-  const companyFilter = companyDetail?.filter(list => {
-    return (
-      list.company_name
-        .toLowerCase()
-        .indexOf(search.toLowerCase()) !== -1
-    );
-  });
+  React.useEffect(() => {
+    setResponse("0");
+    try {
+      // Fetching Company Method
+      let companyURL = `/api/fetch-company-admin?company_name=${search}&page=${page}&limit=12`;
+      fetchCompany(token, companyURL)
+        .then(res => {
+          setCompanyDetail(res?.data?.data);
+          setTotalPages(res?.data?.pages);
+          if (res?.data?.data.length === 0) setResponse('Collection is Empty');
+          else setResponse('1');
+        }).catch(err => {
+          setError(err);
+          removeStatus(setError);
+        });
+    } catch (error) {
+      setError(error.message);
+    }
+  }, [search, page]);
 
+  const generateCSV = () => {
+    try {
+      let URL = `/api/generate-company-csv?company_name=${search}&page=${page}`;
+      downloadCSV(token, URL)
+        .then(({ data }) => {
+          window.open(SERVER_URL + data?.downloadURL, '_parent');
+        })
+        .catch(error => {
+          setError(error);
+          removeStatus(setError);
+        });
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+  const searchHandler = (value) => {
+    setSearch(value);
+    setPage(1);
+  }
   return (
     <div className='ca_container'>
       {/* Error Alert */}
       {error !== '' && <Alert severity="error">{error}</Alert>}
 
       <div className='company_admin_title_and_btn'>
-        {/* Tittle */}
-        <CustomizeTitle text={'Company'} />
+        <div className='direction'>
+          {/* Tittle */}
+          <CustomizeTitle text={'Company'} />
+          {isResponse === '1' || (isResponse.length <= 1 &&
+            <CircularProgress size={25} sx={{ ml: 1 }} />
+          )}
+        </div>
 
         {/* Add company admin */}
         <Box className='direction'>
-          <Button variant="text" onClick={() => window.location.reload(false)}><AutorenewIcon /></Button>
-          <Searchbar handler={setSearch} />
+          <Searchbar handler={searchHandler} />
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            style={{margin: "0 5px"}}
+            style={{ ml: "5px" }}
+            onClick={generateCSV}
+          >
+            CSV
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            sx={{ margin: "0 5px" }}
             onClick={() => nav(`register-company-admin`,)}
           >
             Company Admin
@@ -60,19 +111,18 @@ const CompanyAdmin = ({ companyDetail, isResponse, error, toggleLoader }) => {
         </Box>
       </div>
 
+      {/* Error Responser */}
+      {error !== '' && <Alert severity="error">{error}</Alert>}
+
       {/* Responser */}
-      {isResponse !== '1' && ((isResponse === "0") || (isResponse === "") ?
-        <Box sx={{ display: 'flex' }}>
-          <CircularProgress />
-        </Box>
-        :
-        <Alert severity="warning">{isResponse}</Alert>
-      )}
+      {isResponse.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
 
       {/* Table */}
       {companyDetail.length !== 0 &&
-        <TableLayout detail={companyFilter} token={token} toggleLoader={toggleLoader} />
+        <TableLayout detail={companyDetail} token={token} toggleLoader={toggleLoader} />
       }
+
+      <Pagination count={totalPages} setPage={setPage} />
     </div>
   );
 };
