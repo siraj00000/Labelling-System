@@ -113,8 +113,8 @@ uploadRouter.post("/video", async (req, res, next) => {
                     { width: 300, height: 300 },
                     { width: 160, height: 100, gravity: "south" }],
                 eager_async: true,
-                eager_notification_url: "http://35.91.46.210/brands",
-                notification_url: "http://35.91.46.210/brands"
+                eager_notification_url: "http://35.92.20.94/brands",
+                notification_url: "http://35.92.20.94/brands"
             },
             function (error, result) {
                 console.log(result, error);
