@@ -14,7 +14,6 @@ import { updateManufacturer } from '../../../../../utils/actions/companyData';
 import { token } from '../../../../../utils/actions';
 
 const EditManufactureAdmin = () => {
-    let nav = useNavigate();
     let { state } = useLocation();
     let { data, id } = state;
     // Field States
@@ -56,9 +55,6 @@ const EditManufactureAdmin = () => {
 
     return (
         <form className='form-sec' onSubmit={updateHandler}>
-            <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-                onClick={() => nav(-1)}
-            ><ArrowBackIcon sx={{ color: '#583e81' }} />Back</label>
             <CustomizeTitle text={'Update Manufacturer Admin'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
             {success !== '' && <Alert severity="success">{success}</Alert>}

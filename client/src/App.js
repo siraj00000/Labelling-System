@@ -9,9 +9,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import { theme } from './mui_theme/theme';
 import { token } from './utils/actions';
 import Splash from './components/splash';
-import Dashboard from './pages/Dashboard';
 
 // App Screen Lazy import
+const LoginScreen = lazy(() => import('./pages/auth/LoginScreen'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 const AdminList = lazy(() => import('./pages/Dashboard/SA_Screens/Admin'));
 const Category = lazy(() => import('./pages/Dashboard/SA_Screens/Category/category'));
 const Brands = lazy(() => import('./pages/Dashboard/SA_Screens/Brand'));
@@ -19,7 +20,6 @@ const ManufacturerAdmin = lazy(() => import('./pages/Dashboard/SA_Screens/Admin/
 const SubCategory = lazy(() => import('./pages/Dashboard/SA_Screens/Category/subcategory'));
 
 const ForgetPassword = lazy(() => import('./pages/auth/ForgetPassword'));
-const LoginScreen = lazy(() => import('./pages/auth/LoginScreen'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 const CreateCompanyAdmin = lazy(() => import('./pages/Dashboard/SA_Screens/Admin/CompanyAdmin/createCompanyAdmin'));
 const EditCompanyAdmin = lazy(() => import('./pages/Dashboard/SA_Screens/Admin/CompanyAdmin/editCompanyAdmin'));

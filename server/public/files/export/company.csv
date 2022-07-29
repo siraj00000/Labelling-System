@@ -1,4 +1,3 @@
-Manufacturer_Email,Manufacturer,Company_Id,Company_Name,Pincode,Registered_Address,Phone_One,Phone_Two,Manufacturer_Active_Status,CreatedAt
-ach@faj.com,ACH,62dbbf07b9930a1fda366e68,ICM JAPAN,129289,-,-,-,true,Tue Jul 26 2022 05:07:08 GMT+0500 (Pakistan Standard Time)
-xyz_ma@manufacturer.com,XYZ MA,62dbbf07b9930a1fda366e68,ICM JAPAN,939201,-,-,-,true,Sun Jul 24 2022 20:22:26 GMT+0500 (Pakistan Standard Time)
-abc@manu.com,ABC M,62dbbe62b9930a1fda366e52,Fiver,123456,-,-,-,true,Sat Jul 23 2022 14:57:02 GMT+0500 (Pakistan Standard Time)
+Company_Email,Company_Name,Pincode,Registered_Address,Phone_One,Phone_Two,Company_Active_Status,Estaiblishment_Year,Sub_Category,CreatedAt
+ICM@car.com,ICM JAPAN,123455,"R 1 Row A BAGH E RAFI, Gulshan e ghazali",3152649618,-,true,Wed Jul 13 2022 05:00:00 GMT+0500 (Pakistan Standard Time),[object Object],Sat Jul 23 2022 14:27:35 GMT+0500 (Pakistan Standard Time)
+fiver@marketplace.com,Fiver,12345, american street block # 3,9023923892,-,true,Sat Jul 09 2022 05:00:00 GMT+0500 (Pakistan Standard Time),[object Object],Sat Jul 23 2022 14:24:50 GMT+0500 (Pakistan Standard Time)
