@@ -1,3 +1,3 @@
 Company_Email,Company_Name,Pincode,Registered_Address,Phone_One,Phone_Two,Company_Active_Status,Estaiblishment_Year,Sub_Category,CreatedAt
-ICM@car.com,ICM JAPAN,123455,"R 1 Row A BAGH E RAFI, Gulshan e ghazali",3152649618,-,true,Wed Jul 13 2022 05:00:00 GMT+0500 (Pakistan Standard Time),[object Object],Sat Jul 23 2022 14:27:35 GMT+0500 (Pakistan Standard Time)
-fiver@marketplace.com,Fiver,12345, american street block # 3,9023923892,-,true,Sat Jul 09 2022 05:00:00 GMT+0500 (Pakistan Standard Time),[object Object],Sat Jul 23 2022 14:24:50 GMT+0500 (Pakistan Standard Time)
+ICM@car.com,ICM JAPAN,123455,"R 1 Row A BAGH E RAFI, Gulshan e ghazali",3152649618,-,true,Wed Jul 13 2022 05:00:00 GMT+0500 (Pakistan Standard Time),Audi,Sat Jul 23 2022 14:27:35 GMT+0500 (Pakistan Standard Time)
+fiver@marketplace.com,Fiver,12345, american street block # 3,9023923892,-,true,Sat Jul 09 2022 05:00:00 GMT+0500 (Pakistan Standard Time),Audi,Sat Jul 23 2022 14:24:50 GMT+0500 (Pakistan Standard Time)

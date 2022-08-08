@@ -1,4 +1,4 @@
-const User = require("../model/userSchema");
+const User = require("../model/AuthSchema/userSchema");
 const ErrorResponse = require("../utils/errorResponse");
 
 const authAdmin = async (req, res, next) => {

@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 import { useNavigate } from 'react-router-dom';
 import { logoutHandler } from '../utils/actions';
 import { Box } from '@mui/material';
@@ -58,8 +59,10 @@ const TopAppbar = ({ open, setOpen }) => {
                         noWrap
                         component="div"
                         onClick={() => nav('/')}
-                        sx={{ cursor: 'pointer' }}
+                        className='direction'
+                        sx={{ cursor: 'pointer', gap: 1 }}
                     >
+                        <AdminPanelSettingsOutlinedIcon fontSize='large' />
                         {hasAdminRole}
                     </Typography>
                     <Box

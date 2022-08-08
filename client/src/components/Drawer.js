@@ -10,11 +10,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import GridViewIcon from '@mui/icons-material/GridView';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import DiamondIcon from '@mui/icons-material/Diamond';
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import drawerMenuList from '../helper/menu';
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -67,36 +64,11 @@ const AppDrawer = ({ open, setOpen }) => {
     const theme = useTheme();
     let navigate = useNavigate();
 
-    const DrawerMenuItem = [
-        {
-            routeName: "Admin",
-            Icon: SupervisorAccountIcon,
-            handler: () => navigationHandler("/admins")
-        },
-        {
-            routeName: "Category",
-            Icon: GridViewIcon,
-            handler: () => navigationHandler("/category")
-        },
-        {
-            routeName: "Sub Category",
-            Icon: ListAltIcon,
-            handler: () => navigationHandler("/subcategory")
-        },
-        {
-            routeName: "Brand",
-            Icon: DiamondIcon,
-            handler: () => navigationHandler("/brands")
-        }
-    ]
+    const DrawerMenuItem = drawerMenuList(navigate);
 
     const handleDrawerClose = () => {
         setOpen(false);
     };
-
-    const navigationHandler = (path) => {
-        navigate(path)
-    }
 
     return (
         <div>
@@ -131,13 +103,12 @@ const AppDrawer = ({ open, setOpen }) => {
                                     <ListItemText primary={routeName} sx={{ opacity: open ? 1 : 0 }} />
                                 </ListItemButton>
                             </ListItem>
-                        )
+                        );
                     })}
                 </List>
             </Drawer>
         </div>
-    )
-}
+    );
+};
 
-export default AppDrawer
-
+export default AppDrawer;

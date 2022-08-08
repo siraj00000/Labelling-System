@@ -94,7 +94,7 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
       {/* Error Alert */}
       {error !== '' && <Alert severity="error">{error}</Alert>}
 
-      <div className='company_admin_title_and_btn'>
+      <div className='direction-corner'>
         <div className='direction' >
           {/* Tittle */}
           <CustomizeTitle text={'Manufacturer'} />

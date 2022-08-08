@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, CircularProgress } from '@mui/material';
 import { removeStatus, token } from '../../../../../utils/actions';
 import { fetchCategory } from '../../../../../utils/actions/category';
-import CustomizeTitle from '../../../../../mui_theme/title';
-import CategoryTables from '../../../../../components/TableLayouts/categoryList';
-import AddIcon from '@mui/icons-material/Add';
-import Splash from '../../../../../components/splash';
-import Searchbar from '../../../../../components/Searchbar';
 import { SERVER_URL } from '../../../../../utils/constants';
 import { downloadCSV } from '../../../../../utils/actions/sub-actions';
+import AddIcon from '@mui/icons-material/Add';
+import CustomizeTitle from '../../../../../mui_theme/title';
+import CategoryTables from '../../../../../components/TableLayouts/categoryList';
+import Splash from '../../../../../components/splash';
+import Searchbar from '../../../../../components/Searchbar';
 import Pagination from '../../../../../components/Pagination';
 
 const Category = () => {
@@ -73,7 +73,7 @@ const Category = () => {
     return (
         <div style={{ width: '80%' }}>
             {/* <BreadCrumbs /> */}
-            <div className='company_admin_title_and_btn'>
+            <div className='direction-corner'>
                 <div className='direction' >
                     {/* Tittle */}
                     <CustomizeTitle text={'Category'} />

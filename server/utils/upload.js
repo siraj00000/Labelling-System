@@ -9,7 +9,7 @@ cloudinary.config({
     secure: true
 });
 
-const uploadImagesToCloudinary = (_file, next) => {
+const uploadImagesToCloudinary = (_file, next, folderName) => {
     return new Promise(async (resolve, reject) => {
         try {
             let imageUrlList = [];
@@ -18,14 +18,14 @@ const uploadImagesToCloudinary = (_file, next) => {
 
             if (!isList) {
                 verifyImageSizaAndtype(_file, next);
-                const result = await uploadImage(_file, next);
+                const result = await uploadImage(_file, next, folderName);
                 imageUrlList.push(result);
 
             } else {
                 for (var i = 0; i < _file.length; i++) {
                     var file = _file[i];
                     verifyImageSizaAndtype(file, next);
-                    const result = await uploadImage(file, next);
+                    const result = await uploadImage(file, next, folderName);
                     imageUrlList.push(result);
                 }
             }
@@ -45,9 +45,9 @@ const removeTmp = (path) => {
     fs.unlinkSync(path);
 };
 
-const uploadImage = (file, next) => {
+const uploadImage = (file, next, folderName) => {
     return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(file.tempFilePath, { folder: 'label' }, async (err, result) => {
+        cloudinary.uploader.upload(file.tempFilePath, { folder: folderName }, async (err, result) => {
             if (err) return next(new ErrorResponse("cloudinary error", 412));
             removeTmp(file.tempFilePath);
             resolve({ public_id: result.public_id, url: result.secure_url });
@@ -69,24 +69,24 @@ const verifyImageSizaAndtype = async (file, next) => {
     }
 };
 
-const uploadVideoToCloudinary = (video, next) => {
+const uploadVideoToCloudinary = (video, next, folderName) => {
     return new Promise(async (resolve, reject) => {
         // file format must be jpeg or png
         if (video.mimetype !== 'video/mp4') {
             return next(new ErrorResponse("Incorrect video file format", 400));
         }
-        uploadVideo(video)
+        uploadVideo(video, folderName)
             .then(res => resolve(res))
             .catch(error => reject(error));
     });
 };
 
-const uploadVideo = (video) => {
+const uploadVideo = (video, folderName) => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader.upload(video.tempFilePath,
             {
                 resource_type: "video",
-                folder: "label",
+                folder: folderName,
                 chunk_size: 15000000,
                 eager: [
                     { width: 300, height: 300 },
@@ -95,7 +95,6 @@ const uploadVideo = (video) => {
                 eager_notification_url: "https://localhost:3000/brands",
                 notification_url: "https://localhost:3000/brands"
             }, async (err, result) => {
-                console.log(result);
                 if (err) reject(err);
                 removeTmp(video.tempFilePath);
                 resolve({ public_id: result?.public_id, url: result?.secure_url });

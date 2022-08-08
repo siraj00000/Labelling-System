@@ -73,7 +73,7 @@ const Brands = () => {
     }
     return (
         <div style={{ width: '100%' }}>
-            <div className='company_admin_title_and_btn'>
+            <div className='direction-corner'>
                 <div className='direction' onClick={() => setPage(page + 1)}>
                     {/* Tittle */}
                     <CustomizeTitle text={'Brands'} />

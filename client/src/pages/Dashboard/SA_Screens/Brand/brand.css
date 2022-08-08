@@ -59,7 +59,7 @@
 }
 
 .selected-chip {
-  background: var(--primary_color);
+  background: var(--primary_color) !important;
   color: var(--light);
   margin: 5px 8px;
   margin-left: 0;

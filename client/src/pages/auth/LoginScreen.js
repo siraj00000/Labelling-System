@@ -31,10 +31,12 @@ const LoginScreen = () => {
             },
         };
         try {
+            // Insert User To DB
             const { data } = await API.post("api/auth/login", { email, password }, config);
-
+            // Persist Auth Token
             localStorage.setItem("authToken", data?.token);
             if (data.userInfo) {
+                // Persist Auth User Role
                 localStorage.setItem("role", data.userInfo.role);
                 const adminType = successMsg(data.userInfo.role);
                 setSuccess(`${adminType} admin login successfull!`);

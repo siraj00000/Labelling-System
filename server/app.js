@@ -8,16 +8,18 @@ const connectMongoDb = require("./config/db");
 const errorHandler = require("./middleware/error");
 
 // Router imports
-const authRouter = require("./router/authRouter");
-const brandRouter = require("./router/brandRouter");
-const categoryRouter = require("./router/categoryRouter");
-const companyAdminRouter = require("./router/companyAdminRouter");
-const manufactureRouter = require("./router/manufacturerAdminRouter");
-const { privateRoute } = require('./router/privateRoute');
-const subCategoryRouter = require("./router/subcategoryRouter");
-const uploadRouter = require("./router/uploadImage");
-const { options } = require("./router/uploadImage");
-const statusRouter = require("./router/networkStatus");
+const authRouter = require("./router/AuthRouter/authRouter");
+const brandRouter = require("./router/SuperAdminRouter/brandRouter");
+const categoryRouter = require("./router/SuperAdminRouter/categoryRouter");
+const companyAdminRouter = require("./router/SuperAdminRouter/companyAdminRouter");
+const manufactureRouter = require("./router/SuperAdminRouter/manufacturerAdminRouter");
+const { privateRoute } = require('./router/AuthRouter/privateRoute');
+const subCategoryRouter = require("./router/SuperAdminRouter/subcategoryRouter");
+const statusRouter = require("./router/Rest/networkStatus");
+const productRouter = require("./router/CompanyRouter/productRouter");
+const uploadRouter = require("./router/CompanyRouter/upload");
+const labelRouter = require("./router/ManufacturerRouter/labelRouter");
+const authProtectionRouter = require("./router/AuthRouter/protectionRouter");
 
 const app = express();
 app.use(express.json());
@@ -25,8 +27,6 @@ app.use(cors());
 app.use(fileUpload({
     useTempFiles: true
 }));
-bodyParser.json([options]);
-// app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // DB Connection
@@ -35,6 +35,9 @@ connectMongoDb();
 // Auth
 app.use("/api/auth", authRouter);
 app.use('/api/private', privateRoute);
+app.use('/api/auth', authProtectionRouter);
+
+// ============== SUPER ADMIN ================== //
 
 // Category & Sub-category
 app.use("/api", categoryRouter);
@@ -47,13 +50,22 @@ app.use("/api", manufactureRouter);
 // Brand
 app.use("/api", brandRouter);
 
+// ============== COMPANY ADMIN ================== //
+
+app.use("/api", productRouter);
+
+// ============== Manufacturer ADMIN ================== //
+
+app.use("/api", labelRouter);
+
 // Download CSV
 app.use("/files", express.static(path.join(__dirname, 'public/files')));
 
-app.use("/api", uploadRouter);
-
 // Network Status
 app.use("/", statusRouter);
+
+// upload
+app.use("/api", uploadRouter);
 
 // Error Handler (should be the last piece of middleware)
 app.use(errorHandler);

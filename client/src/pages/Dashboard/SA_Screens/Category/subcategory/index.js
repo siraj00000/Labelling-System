@@ -89,7 +89,7 @@ const SubCategory = () => {
     }
     return (
         <div style={{ width: '80%' }}>
-            <div className='company_admin_title_and_btn'>
+            <div className='direction-corner'>
                 <div className='direction'>
                     {/* Tittle */}
                     <CustomizeTitle text={'Sub Category'} />

@@ -27,10 +27,10 @@ const CreateCompanyAdmin = () => {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    let URL = `/api/fetch-subcategory`;
 
     useEffect(() => {
         try {
-            let URL = `/api/fetch-subcategory`
             fetchSubCategory(token, URL)
                 .then(res => setCategory(res.data?.data))
                 .catch(err => setError(err));
@@ -50,9 +50,11 @@ const CreateCompanyAdmin = () => {
         setPhoneTwo(0);
         setRegisteredAddress("");
         setEstaiblishmentYear("");
-        setCompanyActiveStatus("");
-        setSubCategory([]);
         setCompanyActiveStatus(true);
+        setSubCategory([]);
+        fetchSubCategory(token, URL)
+            .then(res => setCategory(res.data?.data))
+            .catch(err => setError(err));
     };
     const verifyFieldValues = () => {
         if (pincode.length !== 6) {
@@ -97,7 +99,6 @@ const CreateCompanyAdmin = () => {
             setError(error.message);
         }
     };
-
     const selectSubCat = (val, index) => {
         let preData = [...category];
         let data = [...sub_category];
@@ -110,7 +111,6 @@ const CreateCompanyAdmin = () => {
         data.push(val);
         setSubCategory(data);
     };
-
     const unSelectSubCat = (val, index) => {
         let data = [...category];
         let preData = [...sub_category];
@@ -123,7 +123,6 @@ const CreateCompanyAdmin = () => {
         data.push(val);
         setCategory(data);
     };
-
     const handleChange = (event) => {
         setCompanyActiveStatus(event.target.checked);
     };

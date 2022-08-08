@@ -450,11 +450,11 @@ const EditBrand = () => {
                         {uploadedImageList?.length !== 0 && uploadedImageList?.map((item, index) => {
                             return (
                                 <div
+                                    key={index}
                                     className='imageList__container'
                                     onClick={() => removeImageHandler(item.public_id, index)}
                                 >
                                     <img
-                                        key={index}
                                         src={item.url || item}
                                         className={'imageList__img'}
                                         alt={'imageList__img'}

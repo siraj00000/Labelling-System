@@ -7,6 +7,7 @@ import BreadCrumbs from './BreadCrumbs';
 
 export default function DashboardLayout(props) {
     const [open, setOpen] = React.useState(false);
+    
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />

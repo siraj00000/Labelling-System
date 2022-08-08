@@ -73,38 +73,38 @@ const CreateBrand = () => {
     }, []);
 
     const clearStates = () => {
-        setBrand("")
-        setSelectedCompany("")
-        setHeading("")
-        setText("")
-        setCarouselHeading([])
-        setCarouselText([])
-        setProductDescription("")
-        setSurveyFeature(false)
-        setSurveyLink("")
-        setAuthenticationFeature("")
-        setBrandActiveStatus(true)
-        setWarranty(false)
-        setRequestHelp(false)
-        setPromoCode(false)
-        setReferrals(false)
-        setReOrderLink("")
-        setEmailSupport(false)
-        setEmailId("")
-        setCallSupport(false)
-        setCallNo(null)
-        setwhatsappSupport(false)
-        setwhatsappNumber(null)
-        setInstagram(false)
-        setInstaLink("")
-        setFacebook(false)
-        setFbLink("")
-        setUploadedImageList([])
-        setSelectedVideo("")
-        setVideo("")
-        setVideoURL("")
-        setFile([])
-    }
+        setBrand("");
+        setSelectedCompany("");
+        setHeading("");
+        setText("");
+        setCarouselHeading([]);
+        setCarouselText([]);
+        setProductDescription("");
+        setSurveyFeature(false);
+        setSurveyLink("");
+        setAuthenticationFeature("");
+        setBrandActiveStatus(true);
+        setWarranty(false);
+        setRequestHelp(false);
+        setPromoCode(false);
+        setReferrals(false);
+        setReOrderLink("");
+        setEmailSupport(false);
+        setEmailId("");
+        setCallSupport(false);
+        setCallNo(null);
+        setwhatsappSupport(false);
+        setwhatsappNumber(null);
+        setInstagram(false);
+        setInstaLink("");
+        setFacebook(false);
+        setFbLink("");
+        setUploadedImageList([]);
+        setSelectedVideo("");
+        setVideo("");
+        setVideoURL("");
+        setFile([]);
+    };
 
     const verifyUploads = () => {
         if (__file.length === 0) {
@@ -139,20 +139,18 @@ const CreateBrand = () => {
                     .then(res => {
                         setSuccess(res?.data.msg);
                         removeStatus(setSuccess);
-                        clearStates()
-                        setLoading(false)
+                        clearStates();
+                        setLoading(false);
                     })
                     .catch(error => {
                         setError(error?.response.data.error);
                         removeStatus(setError);
-                    })
+                    });
             }
             catch (error) {
                 setError(error);
                 setSuccess("");
-                setTimeout(() => {
-                    setError("");
-                }, 5000);
+                removeStatus(setError);
             }
         }
     };
