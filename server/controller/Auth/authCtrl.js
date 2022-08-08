@@ -47,7 +47,7 @@ const userAuthCtrl = {
 
             await user.save();
 
-            const resetUrl = `http://35.92.20.94/passwordreset/${resetToken}`;
+            const resetUrl = `http://54.201.112.129/passwordreset/${resetToken}`;
 
             const message = `
                 <h1>You have requested a password reset</h1>

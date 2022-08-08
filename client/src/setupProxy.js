@@ -4,7 +4,7 @@ module.exports = function (app) {
     app.use(
         '/api',
         createProxyMiddleware({
-            target: 'http://35.92.20.94',
+            target: 'http://54.201.112.129',
             changeOrigin: true,
         })
     );
