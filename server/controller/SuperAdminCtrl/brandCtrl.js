@@ -11,7 +11,7 @@ const VerifyPagination = require("../../utils/actions");
 const brandCtrl = {
     insertBrand: async (req, res, next) => {
         try {
-            res.set("Access-Control-Allow-Origin", "http://54.201.112.129");
+            res.set("Access-Control-Allow-Origin", "http://34.219.139.83");
 
             //? Parse body data  
             let body = JSON.parse(req.body.reqBody);
@@ -149,7 +149,7 @@ const brandCtrl = {
     updateBrandInfo: async (req, res, next) => {
         // Note: image and video word must provide as field name in the formData
         try {
-            res.set("Access-Control-Allow-Origin", "http://54.201.112.129");
+            res.set("Access-Control-Allow-Origin", "http://34.219.139.83");
 
             const { id } = req.params;
             if (!id) return next(new ErrorResponse("Invalid brand entry!", 401));
