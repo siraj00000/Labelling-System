@@ -19,8 +19,10 @@ import VideoPlayer from '../../../../components/VideoPlayer';
 import Splash from '../../../../components/splash';
 import swal from 'sweetalert';
 import { AppButton } from '../../../../components/StyledComponent';
+import { useNavigate } from 'react-router-dom';
 
 const CreateBrand = () => {
+    let nav = useNavigate();
     const [isLoading, setLoading] = useState(false);
     // Field States
     const [company, setCompany] = useState([]);
@@ -57,12 +59,12 @@ const CreateBrand = () => {
     const [__file, setFile] = useState([]);
 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     useEffect(() => {
         let companyURL = `/api/fetch-company-admin`;
         fetchCompany(token, companyURL)
             .then(res => {
+                if (!res.data.success) return setError("404");
                 setCompany(res?.data?.data);
             }).catch(error => {
                 setError(error);
@@ -71,40 +73,6 @@ const CreateBrand = () => {
                 }, 5000);
             });
     }, []);
-
-    const clearStates = () => {
-        setBrand("");
-        setSelectedCompany("");
-        setHeading("");
-        setText("");
-        setCarouselHeading([]);
-        setCarouselText([]);
-        setProductDescription("");
-        setSurveyFeature(false);
-        setSurveyLink("");
-        setAuthenticationFeature("");
-        setBrandActiveStatus(true);
-        setWarranty(false);
-        setRequestHelp(false);
-        setPromoCode(false);
-        setReferrals(false);
-        setReOrderLink("");
-        setEmailSupport(false);
-        setEmailId("");
-        setCallSupport(false);
-        setCallNo(null);
-        setwhatsappSupport(false);
-        setwhatsappNumber(null);
-        setInstagram(false);
-        setInstaLink("");
-        setFacebook(false);
-        setFbLink("");
-        setUploadedImageList([]);
-        setSelectedVideo("");
-        setVideo("");
-        setVideoURL("");
-        setFile([]);
-    };
 
     const verifyUploads = () => {
         if (__file.length === 0) {
@@ -137,19 +105,24 @@ const CreateBrand = () => {
 
                 insertBrand(token, formData)
                     .then(res => {
-                        setSuccess(res?.data.msg);
-                        removeStatus(setSuccess);
-                        clearStates();
-                        setLoading(false);
+                        swal({
+                            title: "Success!",
+                            text: res?.data?.msg,
+                            icon: "success",
+                            button: "Aww yiss!",
+                        }).then(() => {
+                            nav('/brands', { replace: true });
+                            setLoading(false);
+                        });
                     })
                     .catch(error => {
+                        setLoading(false);
                         setError(error?.response.data.error);
                         removeStatus(setError);
                     });
             }
             catch (error) {
                 setError(error);
-                setSuccess("");
                 removeStatus(setError);
             }
         }
@@ -185,6 +158,17 @@ const CreateBrand = () => {
         let imageDetail = [];
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
+
+            if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+                swal({
+                    title: 'Invalid file format !!',
+                    text: `Only jpeg or png are allowed`,
+                    icon: `info`,
+                    buttons: `Try Again`
+                });
+                return false;
+            }
+
             images.push(URL.createObjectURL(file));
             imageDetail.push(file);
         }
@@ -203,6 +187,17 @@ const CreateBrand = () => {
             });
             return false;
         }
+
+        if (file.type !== 'video/mp4') {
+            swal({
+                title: 'Invalid file format !!',
+                text: `Only mp4 format is allowed`,
+                icon: `info`,
+                buttons: `Try Again`
+            });
+            return false;
+        }
+
         if (videoURL !== '') return false;
         let video = URL.createObjectURL(file);
         setVideo(video);
@@ -221,15 +216,16 @@ const CreateBrand = () => {
         setSelectedVideo("");
     };
 
+    if (error === '404') return <Alert severity="warning">No Company data found !!</Alert>;
+
     if (isLoading) {
         return <Splash loading={isLoading} />;
     }
 
     return (
-        <form className='form-sec full-width' onSubmit={insertBrandDetail}>
+        <form className='form-structure' onSubmit={insertBrandDetail}>
             <CustomizeTitle text={'Add Brand'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='create-brand__flex'>
                 <section className='brand_form'>
                     <div className='company_admin_form'>

@@ -2,14 +2,13 @@ const User = require("../../model/AuthSchema/userSchema");
 const ErrorResponse = require("../../utils/errorResponse");
 const sendEmail = require("../../utils/sendEmail");
 const crypto = require("crypto");
-const roleToken = require("../../helper/roleToken");
 
 const userAuthCtrl = {
     register: async (req, res, next) => {
-        const { username, email, password, role, company_email } = req.body;
+        const { email, password, role, company_email } = req.body;
         try {
             const user = await User.create({
-                username, email, password, role, company_email
+                email, password, role, company_email
             });
             sendRegisterToken(user, 201, res);
         } catch (error) {
@@ -47,7 +46,7 @@ const userAuthCtrl = {
 
             await user.save();
 
-            const resetUrl = `http://54.201.112.129/passwordreset/${resetToken}`;
+            const resetUrl = `http://localhost:8000/passwordreset/${resetToken}`;
 
             const message = `
                 <h1>You have requested a password reset</h1>
@@ -88,8 +87,6 @@ const userAuthCtrl = {
                 resetPasswordExpire: { $gt: Date.now() }
             });
 
-            console.log(user);
-
             if (!user) {
                 return next(new ErrorResponse("Invalid Reset Token", 400));
             }
@@ -104,6 +101,44 @@ const userAuthCtrl = {
                 success: true,
                 data: "Password Reset Success",
                 token: user.getSignedJwtToken(),
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+    resetSubAdminPassword: async (req, res, next) => {
+        try {
+            const { email } = req.body;
+
+            const user = await User.findOne({ email });
+            if (!user) return next(new ErrorResponse("No user found !!", 400));
+
+            if (user.role === 1) return next(new ErrorResponse("Access denied !!", 400));
+
+            const resetToken = user.getResetPasswordToken();
+
+            await user.save();
+
+            const resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+            const __user = await User.findOne({
+                resetPasswordToken,
+                resetPasswordExpire: { $gt: Date.now() }
+            });
+
+            if (!__user) {
+                return next(new ErrorResponse("Invalid Reset Token", 400));
+            }
+
+            __user.password = req.body.password;
+            __user.resetPasswordToken = undefined;
+            __user.resetPasswordExpire = undefined;
+
+            await __user.save();
+
+            res.status(200).json({
+                success: true,
+                msg: "Password Reset Success",
             });
         } catch (error) {
             next(error);
@@ -139,7 +174,7 @@ const sendRegisterToken = (user, statusCode, res) => {
 
 const sendToken = (user, statusCode, res) => {
     const token = user.getSignedJwtToken();
-    let userInfo = { name: user.username, role: user.role };
+    let userInfo = { role: user.role };
     res.status(statusCode).json({ success: true, token, userInfo });
 };
 

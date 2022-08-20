@@ -15,6 +15,7 @@ import { DeleteAlert } from '../../../../../components/Sweet_Alerts';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Splash from '../../../../../components/splash';
 import { deleteColloction } from '../../../../../utils/actions/category';
+import ResetPasswordDialogBox from '../../../../../components/ResetUserModal';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -120,17 +121,21 @@ export default function ViewManufacturerAdmin() {
                                 <StyledTableCell sx={{ width: '45%' }}>Admin</StyledTableCell>
                                 <StyledTableCell sx={{ width: '45%' }} align="center">Details</StyledTableCell>
                                 <StyledTableCell align="center">Delete</StyledTableCell>
+                                <StyledTableCell align="center">Edit</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {admins?.map((item) => {
                                 return (
                                     <StyledTableRow key={item?._id}>
-                                        <StyledTableCell sx={{ width: '45%' }} align="left">username</StyledTableCell>
-                                        <StyledTableCell sx={{ width: '45%' }} align="center">{item.username}</StyledTableCell>
+                                        <StyledTableCell sx={{ width: '45%' }} align="left">Email</StyledTableCell>
+                                        <StyledTableCell sx={{ width: '45%' }} align="center">{item.email}</StyledTableCell>
                                         <StyledTableCell
                                             align="center" onClick={() => deleteHandler(item?._id, item?.role)}>
                                             <DeleteForeverIcon sx={{ cursor: 'pointer' }} />
+                                        </StyledTableCell>
+                                        <StyledTableCell align="center">
+                                            <ResetPasswordDialogBox email={item.email} />
                                         </StyledTableCell>
                                     </StyledTableRow>
                                 );

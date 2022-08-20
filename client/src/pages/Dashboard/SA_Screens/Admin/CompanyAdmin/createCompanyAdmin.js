@@ -11,9 +11,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import '../../../../auth/auth.css';
 import '../admin.css';
+import swal from 'sweetalert';
+import { useNavigate } from 'react-router-dom';
+import Splash from '../../../../../components/splash';
 
 const CreateCompanyAdmin = () => {
+    let nav = useNavigate();
     // Field States
+    const [isLoading, setLoading] = useState(false);
     const [company_email, setCompanyEmail] = useState('');
     const [company_name, setCompanyName] = useState('');
     const [pincode, setPincode] = useState(0);
@@ -26,13 +31,15 @@ const CreateCompanyAdmin = () => {
     const [category, setCategory] = useState([]);
 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
     let URL = `/api/fetch-subcategory`;
 
     useEffect(() => {
         try {
             fetchSubCategory(token, URL)
-                .then(res => setCategory(res.data?.data))
+                .then(res => {
+                    if (!res?.data.success) return setError("404");
+                    setCategory(res.data?.data);
+                })
                 .catch(err => setError(err));
         } catch (error) {
             setError(error);
@@ -42,20 +49,6 @@ const CreateCompanyAdmin = () => {
         }
     }, []);
 
-    const clearStates = () => {
-        setCompanyEmail("");
-        setCompanyName("");
-        setPincode(0);
-        setPhoneOne(0);
-        setPhoneTwo(0);
-        setRegisteredAddress("");
-        setEstaiblishmentYear("");
-        setCompanyActiveStatus(true);
-        setSubCategory([]);
-        fetchSubCategory(token, URL)
-            .then(res => setCategory(res.data?.data))
-            .catch(err => setError(err));
-    };
     const verifyFieldValues = () => {
         if (pincode.length !== 6) {
             setError("Pincode must have 6 digits");
@@ -71,8 +64,9 @@ const CreateCompanyAdmin = () => {
         e.preventDefault();
         let verify = verifyFieldValues();
         if (!verify) return false;
-
+        
         try {
+            setLoading(true);
             const bodyData = {
                 company_email,
                 company_name,
@@ -87,13 +81,20 @@ const CreateCompanyAdmin = () => {
 
             CompanyAdminInsert(token, bodyData)
                 .then(res => {
-                    setSuccess(res?.data.msg);
-                    removeStatus(setSuccess);
-                    clearStates();
+                    swal({
+                        title: "Success!",
+                        text: res?.data?.msg,
+                        icon: "success",
+                        button: "Aww yiss!",
+                    }).then(() => {
+                        nav('/admins', { replace: true });
+                        setLoading(false);
+                    });
                 })
                 .catch(error => {
                     setError(error);
                     removeStatus(setError);
+                    setLoading(false);
                 });
         } catch (error) {
             setError(error.message);
@@ -127,11 +128,14 @@ const CreateCompanyAdmin = () => {
         setCompanyActiveStatus(event.target.checked);
     };
 
+    if (error === '404') return <Alert severity="success">No sub-category data found !!</Alert>;
+
+    if (isLoading) return <Splash loading={isLoading} />;
+
     return (
         <form className='form-sec' onSubmit={insertCompanyAdmin}>
             <CustomizeTitle text={'Add Company'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form'>
                 <div className='company_admin_form_field'>
                     <label>Company *</label>

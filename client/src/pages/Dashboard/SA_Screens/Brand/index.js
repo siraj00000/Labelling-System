@@ -26,20 +26,19 @@ const Brands = () => {
     useEffect(() => {
         const getBrands = async () => {
             setResponse("0");
-            let URL = `/api/fetch-brands?brand=${search}&page=${page}&limit=3`;
+            let URL = `/api/fetch-brands?brand=${search}&page=${page}&limit=50`;
             fetchBrands(token, URL)
                 .then(res => {
-                    setBrands(res?.data?.data);
-                    setTotalPages(res?.data?.pages);
-                    if (res?.data?.data.length === 0) {
+                    if (!res?.data?.success) {
                         setResponse('Collection is Empty');
                     } else {
                         setResponse('1');
+                        setBrands(res?.data?.data);
+                        setTotalPages(res?.data?.pages);
                     }
                 })
                 .catch(error => setError(error?.response.data.error));
         };
-
         getBrands();
     }, [isLoading, search, page]);
 
@@ -57,7 +56,8 @@ const Brands = () => {
             let url = `/api/generate-brand-csv?brand=${search}&page=${page}`;
             downloadCSV(token, url)
                 .then(({ data }) => {
-                    window.open(SERVER_URL + data?.downloadURL, '_parent');
+                    if(!data.success) return false
+                    window.open(SERVER_URL + data.downloadURL, '_parent');
                 }).catch(error => {
                     setError(error);
                     removeStatus(setError);
@@ -70,7 +70,7 @@ const Brands = () => {
     const searchHandler = (value) => {
         setSearch(value);
         setPage(1);
-    }
+    };
     return (
         <div style={{ width: '100%' }}>
             <div className='direction-corner'>
@@ -106,9 +106,9 @@ const Brands = () => {
             {error !== '' && <Alert severity="error">{error}</Alert>}
 
             {/* Responser */}
-            {isResponse.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
+            {isResponse?.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
 
-            {brandsList.length !== 0 &&
+            {brandsList?.length !== 0 &&
                 <BrandsTables data={brandsList} token={token} toggleLoader={toggleLoader} />
             }
 

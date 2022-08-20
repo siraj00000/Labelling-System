@@ -18,43 +18,47 @@ const SubCategory = () => {
     const [_subCategoryList, setSubCategoryList] = useState([]);
     const [isLoading, setLoading] = useState(false);
     const [category, setCategory] = useState([]);
-    const [isResponse, setResponse] = useState('');
+    const [warning, setWarning] = useState();
     const [error, setError] = useState('');
     const [hasData, setHasData] = React.useState(true);
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-
+    const [totalPages, setTotalPages] = useState(1); 
+   
     useEffect(() => {
         fetchCategory(token, `/api/category`)
-            .then(res => { if (res.data?.data.length === 0) setHasData(false); })
+            .then(resp => {
+                if (!resp.data?.success) return setHasData(false);
+                setCategory(resp.data.data);
+                // Fetch sub-category if category exists 
+                const fetchSubCategoryData = async () => {
+                    try {
+                        let URL = `/api/fetch-subcategory?sub_category=${search}&page=${page}&limit=50`;
+                        fetchSubCategory(token, URL)
+                            .then(res => {
+                                let response = res?.data;
+                                if (!response?.success) {
+                                    setWarning('Collection is Empty');
+                                    setSubCategoryList([]);
+                                    setTotalPages(1);
+                                }
+                                else {
+                                    setWarning(false);
+                                    setSubCategoryList(response?.data);
+                                    setTotalPages(response?.pages);
+                                }
+                            }).catch(error => {
+                                setError(error);
+                                removeStatus(setError);
+                            });
+
+                    } catch (error) {
+                        setError(error?.response.data.error);
+                    }
+                };
+                fetchSubCategoryData();
+            })
             .catch(err => { setError(err); removeStatus(setError); });
-
-        const fetchSubCategoryData = async () => {
-            setResponse("0");
-            try {
-                let URL = `/api/fetch-subcategory?sub_category=${search}&page=${page}&limit=12`;
-                fetchSubCategory(token, URL)
-                    .then(res => {
-                        let response = res?.data;
-                        setSubCategoryList(response?.data);
-                        setTotalPages(response?.pages);
-                        if (response?.data.length === 0) setResponse('Collection is Empty');
-                        else setResponse('1');
-                    }).catch(error => {
-                        setError(error);
-                        removeStatus(setError);
-                    });
-
-                fetchCategory(token, `/api/category`)
-                    .then(res => setCategory(res?.data?.data))
-                    .catch(error => setError(error?.response.data.error));
-
-            } catch (error) {
-                setError(error?.response.data.error);
-            }
-        };
-        fetchSubCategoryData();
     }, [isLoading, search, page]);
 
     const toggleLoader = sign => setLoading(sign);
@@ -73,6 +77,7 @@ const SubCategory = () => {
             let URL = `/api/generate-csv-subcat?sub_category=${search}&page=${page}`;
             downloadCSV(token, URL)
                 .then(({ data }) => {
+                    if (!data.success) return false;
                     window.open(SERVER_URL + data?.downloadURL, '_parent');
                 })
                 .catch(error => {
@@ -86,16 +91,19 @@ const SubCategory = () => {
     const searchHandler = (value) => {
         setSearch(value);
         setPage(1);
-    }
+    };
+
+    const isWarning = Boolean(warning !== undefined && typeof warning === 'string');
+
     return (
         <div style={{ width: '80%' }}>
             <div className='direction-corner'>
                 <div className='direction'>
                     {/* Tittle */}
                     <CustomizeTitle text={'Sub Category'} />
-                    {isResponse === '1' || (isResponse.length <= 1 &&
+                    {!isWarning && !_subCategoryList.length &&
                         <CircularProgress size={25} sx={{ ml: 1 }} />
-                    )}
+                    }
                 </div>
 
                 {/* Add company admin */}
@@ -122,9 +130,9 @@ const SubCategory = () => {
             {error !== '' && <Alert severity="error">{error}</Alert>}
 
             {/* Responser */}
-            {isResponse.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
+            {isWarning && <Alert severity="warning">{warning}</Alert>}
 
-            {_subCategoryList.length !== 0 &&
+            {!isWarning && _subCategoryList.length !== 0 &&
                 <SubCategoryTables data={_subCategoryList} token={token} category={category} toggleLoader={toggleLoader} />
             }
 

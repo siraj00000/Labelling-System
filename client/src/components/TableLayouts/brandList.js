@@ -68,7 +68,7 @@ export default function BrandsTables({ data, token, toggleLoader }) {
     return (
         <>
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            <TableContainer sx={{ width: '100%' }} component={Paper}>
+            <TableContainer sx={{ width: '100%', maxHeight: '500px' }} component={Paper}>
                 <Table aria-label="customized table">
                     <TableHead>
                         <TableRow>
@@ -81,7 +81,7 @@ export default function BrandsTables({ data, token, toggleLoader }) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((row, index) => {
+                        {data.map((row) => {
                             return (
                                 <StyledTableRow key={row._id}>
                                     <StyledTableCell component="th" scope="row">

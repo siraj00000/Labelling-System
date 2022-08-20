@@ -2,7 +2,7 @@ import { Alert, Box, Button, CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { removeStatus, token } from '../../../../utils/actions';
-import { downloadCSV } from '../../../../utils/actions/sub-actions';
+import { downloadProductCSV } from '../../../../utils/actions/sub-actions';
 import Pagination from '../../../../components/Pagination';
 import Searchbar from '../../../../components/Searchbar';
 import Splash from '../../../../components/splash';
@@ -12,7 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { fetchProducts } from '../../../../utils/actions/Company/com_action';
 import ProductTabel from '../../../../components/TableLayouts/productList';
 
-const Product = () => {
+const Product = ({ user }) => {
     let nav = useNavigate();
     const [isLoading, setLoading] = useState(false);
     const [productList, setProductList] = useState([]);
@@ -25,16 +25,18 @@ const Product = () => {
     useEffect(() => {
         const getLabel = async () => {
             setResponse("0");
-            let URL = `/api/fetch-product?product_name=${search}&page=${page}&limit=12`;
-            fetchProducts(token, URL)
-                .then(res => {
-                    setProductList(res?.data?.data);
-                    setTotalPages(res?.data?.pages);
+            const formData = new FormData();
+            formData.append('email', user.company_email);
 
-                    if (res?.data?.data?.length === 0) {
+            let URL = `/api/fetch-product?product_name=${search}&page=${page}&limit=5`;
+            fetchProducts(token, URL, formData)
+                .then(res => {
+                    if (!res?.data?.success) {
                         setResponse('Collection is Empty');
                     } else {
                         setResponse('1');
+                        setProductList(res?.data?.data);
+                        setTotalPages(res?.data?.pages);
                     }
                 })
                 .catch(error => {
@@ -44,18 +46,25 @@ const Product = () => {
         };
         getLabel();
     }, [isLoading, search, page]);
+
     const toggleLoader = sign => setLoading(sign);
+
     if (isLoading) {
         setTimeout(() => {
             setLoading(false);
         }, 2000);
         return <Splash loading={isLoading} />;
     }
+
     const generateCSV = () => {
         try {
+            const formData = new FormData();
+            formData.append('email', user.company_email);
+
             let URL = `/api/generate-product-csv?product_name=${search}&page=${page}`;
-            downloadCSV(token, URL)
+            downloadProductCSV(token, URL, formData)
                 .then(({ data }) => {
+                    if (!data.success) return false;
                     window.open(SERVER_URL + data?.downloadURL, '_parent');
                 })
                 .catch(error => {
@@ -106,9 +115,9 @@ const Product = () => {
             {error !== '' && <Alert severity="error">{error}</Alert>}
 
             {/* Responser */}
-            {isResponse.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
+            {isResponse?.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
 
-            {productList.length !== 0 &&
+            {productList?.length !== 0 &&
                 <ProductTabel data={productList} token={token} toggleLoader={toggleLoader} />
             }
 

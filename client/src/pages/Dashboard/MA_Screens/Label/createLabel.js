@@ -6,7 +6,12 @@ import '../../SA_Screens/Admin/admin.css';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { Alert, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import CustomizeTitle from '../../../../mui_theme/title';
+import Splash from '../../../../components/splash';
+import { useNavigate } from 'react-router-dom';
+import swal from 'sweetalert';
 const CreateLabel = ({ user }) => {
+  let nav = useNavigate();
+  const [isLoading, setLoading] = useState(false);
   const [brandId, setBrandId] = useState("");
   const [productId, setProductId] = useState("");
   const [brand, setBrand] = useState([]);
@@ -17,8 +22,6 @@ const CreateLabel = ({ user }) => {
   const [serialNumber, setSerialNumber] = useState(0);
   const [tagNumber, setTagNumber] = useState("");
   const [isTagActive, setTagActiveStatus] = useState(true);
-  const [ds1Count, setDS1Count] = useState("");
-  const [ds2Count, setDS2Count] = useState("");
 
   // States for status 
   const [error, setError] = useState('');
@@ -34,22 +37,21 @@ const CreateLabel = ({ user }) => {
     setSerialNumber(0);
     setTagNumber("");
     setTagActiveStatus(true);
-    setDS1Count("");
-    setDS2Count("");
   };
 
   React.useEffect(() => {
     const fetchData = () => {
       // For brands
-      let email = user.company_email;
-      let URL = `/api/fetch-brand-by-email`;
-      fetchBrandByEmail(token, URL, email)
+      const formData = new FormData();
+      formData.append('email', user.company_email);
+      fetchBrandByEmail(token, `/api/fetch-brand-by-manufacturer`, formData)
         .then(res => {
-          setBrand(res?.data?.data);
+          if (res.data.data.length === 0) return setError("404");
+          setBrand(res.data?.data);
         })
         .catch(error => {
           setError(error);
-          removeStatus(setSuccess);
+          removeStatus(setError);
         });
     };
     fetchData();
@@ -64,6 +66,7 @@ const CreateLabel = ({ user }) => {
         setProduct(res.data.data);
       })
       .catch(error => {
+        console.log(error);
         setError(error);
         removeStatus(setError);
       });
@@ -80,6 +83,7 @@ const CreateLabel = ({ user }) => {
   const submitLabelDataToCollection = (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const reqBody = {
         company_name: user.company_email,
         manufacture_id: user._id,
@@ -89,16 +93,20 @@ const CreateLabel = ({ user }) => {
         batch_number: batchNumber,
         serial_number: serialNumber,
         tag_number: tagNumber,
-        tag_active: isTagActive,
-        DS1_count: ds1Count,
-        DS2_count: ds2Count,
+        tag_active: isTagActive
       };
       let URL = '/api/insert-label';
       insertLabelToDB(token, URL, reqBody)
         .then(res => {
-          setSuccess(res?.data?.msg);
-          removeStatus(setSuccess);
-          clearStates();
+          swal({
+            title: "Success!",
+            text: res?.data?.msg,
+            icon: "success",
+            button: "Aww yiss!",
+          }).then(() => {
+            nav('/label', { replace: true });
+            setLoading(false);
+          });
         })
         .catch(error => {
           setError(error);
@@ -109,6 +117,10 @@ const CreateLabel = ({ user }) => {
       removeStatus(setError);
     }
   };
+
+  if (error === '404') return <Alert severity="warning">No brand data found !!</Alert>;
+
+  if (isLoading) return <Splash loading={isLoading} />;
 
   return (
     <form className='form-sec' onSubmit={submitLabelDataToCollection}>
@@ -183,16 +195,6 @@ const CreateLabel = ({ user }) => {
         <div className='company_admin_form_field'>
           <label>Serial number</label>
           <input placeholder='40...' type={'number'} value={serialNumber} onChange={e => setSerialNumber(e.target.value)} required />
-        </div>
-        {/* DS1 COUNT */}
-        <div className='company_admin_form_field'>
-          <label>DS1 Count</label>
-          <input placeholder='ds1...' value={ds1Count} onChange={e => setDS1Count(e.target.value)} />
-        </div>
-        {/* DS2 COUNT */}
-        <div className='company_admin_form_field'>
-          <label>DS2 Count</label>
-          <input placeholder='ds2...' value={ds2Count} onChange={e => setDS2Count(e.target.value)} />
         </div>
         {/* TAG NUMBER */}
         <div className='company_admin_form_field'>

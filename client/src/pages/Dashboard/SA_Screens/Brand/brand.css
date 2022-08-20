@@ -19,6 +19,10 @@
   width: 30%;
 }
 
+.form-structure{
+  padding: 0;
+}
+
 /* Upload */
 .upload-btns-group {
   width: 100%;

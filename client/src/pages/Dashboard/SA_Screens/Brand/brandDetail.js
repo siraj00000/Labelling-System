@@ -58,8 +58,8 @@ export default function BrandDetail() {
                 <div style={{ marginBottom: 15 }}>
                     <h3>Images</h3>
                     <div className='brandDetail__imageList'>
-                        {data?.image_list?.map((item) => {
-                            return <img key={item.public_id} src={item.url} className={'brandDetail__img'} alt={'brand_images'} />;
+                        {data?.image_list?.map((item, index) => {
+                            return <img key={index} src={item.url} className={'brandDetail__img'} alt={'brand_images'} />;
                         })}
                     </div>
                 </div>
@@ -78,6 +78,7 @@ export default function BrandDetail() {
                             const year = dateTypeKey && value.split("T")[0];
                             let status = (key === "brand_active_status") && (value ? "Active" : 'In Active');
                             let title = (key === 'carousel_headings' || key === "carousel_text") && Object.values(value).join(', ');
+                            let isChecked = (key !== "brand_active_status") && (typeof value === 'boolean') && (value === true ? "Yes" : "No");
 
                             return (
                                 <React.Fragment key={key + value}>
@@ -88,7 +89,7 @@ export default function BrandDetail() {
                                         (key !== '_id') && (key !== "__v") &&
                                         <StyledTableRow>
                                             <StyledTableCell align="left">{key}</StyledTableCell>
-                                            <StyledTableCell align="center">{title || year || status || value}</StyledTableCell>
+                                            <StyledTableCell align="center">{isChecked || title || year || status || value}</StyledTableCell>
                                         </StyledTableRow>
                                     }
                                 </React.Fragment>

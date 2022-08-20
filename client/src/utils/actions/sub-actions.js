@@ -16,3 +16,20 @@ export const downloadCSV = async (token, url) => {
         }
     });
 };
+
+export const downloadProductCSV = async (token, url, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await API({
+                method: 'POST', url, data,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+            resolve(response);
+        } catch (error) {
+            reject(error?.response.data.error);
+        }
+    });
+};

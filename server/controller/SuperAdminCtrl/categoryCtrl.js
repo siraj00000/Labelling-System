@@ -13,6 +13,8 @@ const categoryCtrl = {
                 .sorting().paginating();
             const category = await features.query;
 
+            if (!category?.length) return res.status(200).json({ success: false });
+
             let total = await Category.countDocuments();
             let pages = await VerifyPagination(req, total);
 
@@ -103,6 +105,8 @@ const categoryCtrl = {
                 .paginating();
             const sub_category = await features.query;
 
+            if (!sub_category?.length) return res.status(200).json({ success: false });
+
             const csvStream = csv.format({ headers: true });
 
             if (!fs.existsSync('public/files/export')) {
@@ -120,6 +124,7 @@ const categoryCtrl = {
 
             writableStream.on("finish", () => {
                 res.status(200).json({
+                    success: true, 
                     downloadURL: 'files/export/category.csv'
                 });
             });

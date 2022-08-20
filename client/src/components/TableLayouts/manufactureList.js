@@ -67,7 +67,7 @@ export default function ManufacturerList({ detail, token, toggleLoader }) {
     return (
         <>
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} sx={{ maxHeight: '500px' }}>
                 <Table aria-label="customized table">
                     <TableHead>
                         <TableRow>

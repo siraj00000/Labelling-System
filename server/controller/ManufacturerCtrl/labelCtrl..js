@@ -1,6 +1,7 @@
 const Product = require('../../model/CompanySchema/productSchema');
 const Label = require('../../model/ManufacturerSchema/labelSchema');
 const Brand = require('../../model/SuperAdminSchema/brandSchema');
+const Company = require('../../model/SuperAdminSchema/companyAdminSchema');
 const User = require('../../model/AuthSchema/userSchema');
 const Apifeatures = require('../../utils/ApiFeaturer');
 const ErrorResponse = require('../../utils/errorResponse');
@@ -23,6 +24,9 @@ const labelCtrl = {
             req.body["shortDS1"] = req.body["DS1"];
             req.body["shortDS2"] = req.body["DS2"];
 
+            req.body["DS1_URL"] = `http://localhost:8000/${req.body["shortDS1"]}`
+            req.body["DS2_URL"] = `http://localhost:8000/${req.body["shortDS2"]}`
+
             const label = await Label.create(req.body);
             if (label) {
                 res.status(200).json({
@@ -38,10 +42,14 @@ const labelCtrl = {
     },
     fetchLabel: async (req, res, next) => {
         try {
+            const { id } = req.body;
             const search = req.query.company_name || "";
-            const features = new Apifeatures(Label.find({ company_name: { $regex: search, $options: 'i' } }), req.query)
+            const features = new Apifeatures(Label.where({ manufacture_id: id }).find({ company_name: { $regex: search, $options: 'i' } }), req.query)
                 .sorting().paginating();
             const label = await features.query;
+
+            if (!label?.length) return res.status(200).json({ success: false });
+
             const newLabel = await insertNameInLabel(label, next);
 
             let total = await Label.countDocuments();
@@ -55,6 +63,40 @@ const labelCtrl = {
                 msg: "Label fetch !!",
                 data: newLabel,
             });
+        } catch (error) {
+            next(error);
+        }
+    },
+    fetchLabelByCompany: async (req, res, next) => {
+        try {
+            const { email } = req.body;
+            if (!email) return next(new ErrorResponse("Company email does not found !!", 400));
+
+            const company = await Company.where({ company_email: email }).findOne();
+            if (!company) return next(new ErrorResponse("No company exists !!", 400));
+
+            const search = req.query.company_name || "";
+            const features = new Apifeatures(Label.where({ company_email }).find({ company_name: { $regex: search, $options: 'i' } }), req.query)
+                .sorting().paginating();
+            const label = await features.query;
+
+            if (!label?.length) return res.status(200).json({ success: false });
+
+            const newLabel = await insertNameInLabel(label, next);
+
+            let total = await Label.countDocuments();
+            let pages = await VerifyPagination(req, total);
+
+            if (!pages) return next(new ErrorResponse('No page found', 404));
+
+            if (newLabel) res.status(200).json({
+                success: true,
+                pages,
+                msg: "Label fetch !!",
+                data: newLabel,
+            });
+
+
         } catch (error) {
             next(error);
         }
@@ -91,11 +133,15 @@ const labelCtrl = {
     },
     generateCSV: async (req, res, next) => {
         try {
+            const { id } = req.body;
             const search = req.query.company_name || "";
-            const features = new Apifeatures(Label.find({ company_name: { $regex: search, $options: 'i' } }), req.query)
+            const features = new Apifeatures(Label.where({ manufacture_id: id }).find({ company_name: { $regex: search, $options: 'i' } }), req.query)
                 .sorting().paginating();
 
             const label = await features.query;
+
+            if (!label?.length) return res.status(200).json({ success: false });
+
             const newLabel = await insertNameInLabel(label, next);
 
             const csvStream = csv.format({ headers: true });
@@ -130,8 +176,8 @@ const labelCtrl = {
                         Batch_Number: lab.batch_number || '-',
                         Serial_Number: lab.serial_number || '-',
                         Tag_Number: lab.tag_number || '-',
-                        Tag_Active: lab.tag_active ? "Active": "Inactive",
-                        DS1: lab.DS1.map(i=>i) || '-',
+                        Tag_Active: lab.tag_active ? "Active" : "Inactive",
+                        DS1: lab.DS1.map(i => i) || '-',
                         DS2: lab.DS2.map(i => i) || '-',
                         ShortDS1: lab.shortDS1.map(i => i) || '-',
                         ShortDS2: lab.shortDS2.map(i => i) || '-',
@@ -167,10 +213,10 @@ const insertNameInLabel = async (label, next) => {
         const { brand_id, product_id, manufacture_id } = element[index];
         if (!brand_id || !product_id || !manufacture_id) return next(new ErrorResponse("Invalid info !!", 400));
 
-        // Add brand name
+        // Add Manufacturer name
         const manufacturerName = await User.findById({ _id: manufacture_id });
         if (!manufacturerName) return next(new ErrorResponse("Manufacturer name does not found !!", 400));
-        element[index]._doc.manufacturer_name = manufacturerName?.username;
+        element[index]._doc.manufacturer_name = manufacturerName?.email;
 
         // Add brand name
         const brandName = await Brand.findById({ _id: brand_id });

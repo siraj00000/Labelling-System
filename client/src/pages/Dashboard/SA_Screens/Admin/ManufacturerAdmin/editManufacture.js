@@ -5,18 +5,21 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 import Checkbox from '@mui/material/Checkbox';
 import '../../../../auth/auth.css';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-
 import '../admin.css';
+
 import CustomizeTitle from '../../../../../mui_theme/title';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { updateManufacturer } from '../../../../../utils/actions/companyData';
-import { token } from '../../../../../utils/actions';
+import { removeStatus, token } from '../../../../../utils/actions';
+import Splash from '../../../../../components/splash';
+import swal from 'sweetalert';
 
 const EditManufactureAdmin = () => {
     let { state } = useLocation();
     let { data, id } = state;
+    let nav = useNavigate();
     // Field States
+    const [isLoading, setLoading] = useState(false);
     const [pincode, setPincode] = useState(data?.pincode);
     const [phone_one, setPhoneOne] = useState(0);
     const [phone_two, setPhoneTwo] = useState(0);
@@ -24,40 +27,49 @@ const EditManufactureAdmin = () => {
     const [manufacturer_active_status, setManufactureActiveStatus] = useState(data?.manufacturer_active_status);
 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     const updateHandler = async (e) => {
         e.preventDefault();
         let url = `api/update-manufacturer-admin/${id}`;
-        const reqBody = {
-            pincode,
-            manufacturer_active_status,
-            phone_one,
-            phone_two
-        };
-        updateManufacturer(url, token, reqBody)
-            .then(res => {
-                setSuccess(res?.data?.msg);
-                setTimeout(() => {
-                    setSuccess("");
-                }, 5000);
-            }).catch(error => {
-                setError(error?.response.data?.error);
-                setTimeout(() => {
-                    setError("");
-                }, 5000);
-            });
+        try {
+            setLoading(true);
+            const reqBody = {
+                pincode,
+                manufacturer_active_status,
+                phone_one,
+                phone_two
+            };
+            updateManufacturer(url, token, reqBody)
+                .then(res => {
+                    swal({
+                        title: "Success!",
+                        text: res?.data?.msg,
+                        icon: "success",
+                        button: "Aww yiss!",
+                    }).then(() => {
+                        nav('/admins', { replace: true });
+                        setLoading(false);
+                    });
+                }).catch(error => {
+                    setLoading(false);
+                    setError(error?.response.data?.error);
+                    removeStatus(setError);
+                });
+        } catch (error) {
+
+        }
     };
 
     const handleChange = (event) => {
         setManufactureActiveStatus(event.target.checked);
     };
 
+    if (isLoading) return <Splash loading={isLoading} />;
+
     return (
         <form className='form-sec' onSubmit={updateHandler}>
-            <CustomizeTitle text={'Update Manufacturer Admin'} />
+            <CustomizeTitle text={'Update Manufacturer'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form'>
                 <div className='company_admin_form_field'>
                     <label>Pincode</label>
@@ -91,7 +103,7 @@ const EditManufactureAdmin = () => {
                     </FormGroup>
                 </div>
             </div>
-            <button>Create Manufacturer Admin</button>
+            <button>Create Manufacturer</button>
         </form>
     );
 };

@@ -112,9 +112,9 @@ const App = () => {
               {/* COMPANY ADMIN ROUTES */}
               {role === 2 &&
                 <Route path='/' element={AdminRoute(role === 2, <Outlet />, "/")}>
-                  <Route path='products' element={<Product />} />
+                  <Route path='products' element={<Product user={user} />} />
                   <Route path='products/create-product' element={<CreateProduct user={user} />} />
-                  <Route path='products/create-product2' element={<CreateProduct2 />} />
+                  <Route path='products/CreateProduct' element={<CreateProduct2 />} />
                   <Route path='products/update' element={<UpdateProduct />} />
                   <Route path='products/detail' element={<ProductDetail />} />
                 </Route>

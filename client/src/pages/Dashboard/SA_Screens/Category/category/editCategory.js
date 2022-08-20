@@ -2,17 +2,21 @@ import React, { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import API from '../../../../../API';
 import '../../../../auth/auth.css';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../../Admin/admin.css';
 import CustomizeTitle from '../../../../../mui_theme/title';
-import { token } from '../../../../../utils/actions';
+import { removeStatus, token } from '../../../../../utils/actions';
+import swal from 'sweetalert';
+import Splash from '../../../../../components/splash';
 const EditCategory = () => {
     const { state } = useLocation();
     let { detail, id } = state;
+
+    let nav = useNavigate();
     // Field States
+    const [isLoading, setLoading] = useState(false);
     const [category, setCategory] = useState(detail.category_name);
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     const updateCompanyAdmin = async (e) => {
         e.preventDefault();
@@ -24,31 +28,31 @@ const EditCategory = () => {
         };
 
         try {
-            const { data } = await API.put(`/api/update-category/${id}`, {
+            setLoading(true);
+            const response = await API.put(`/api/update-category/${id}`, {
                 category_name: category,
             }, config);
 
-            setSuccess(data?.msg);
-            setError("");
-
-            setTimeout(() => {
-                setSuccess("");
-            }, 5000);
+            swal({
+                title: "Success!",
+                text: response?.data?.msg,
+                icon: "success",
+                button: "Aww yiss!",
+            }).then(() => {
+                nav('/category', { replace: true });
+                setLoading(false);
+            });
 
         } catch (error) {
             setError(error?.response.data.error);
-            setSuccess("");
-            setTimeout(() => {
-                setError("");
-            }, 5000);
+            removeStatus(setError);
         }
     };
-
+    if (isLoading) return <Splash loading={isLoading} />;
     return (
         <form className='form-sec half-width' onSubmit={updateCompanyAdmin}>
             <CustomizeTitle text={'Update Category'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form '>
                 <div className='company_admin_form_field full_width_cont'>
                     <label>Category</label>

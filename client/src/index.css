@@ -43,6 +43,11 @@ code {
   align-items: center;
 }
 
+.direction-col{
+  display: flex;
+  flex-direction: column;
+}
+
 .direction-corner{
   display: flex;
   align-items: center;

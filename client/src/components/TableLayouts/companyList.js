@@ -59,7 +59,7 @@ export default function TableLayout({ detail, token, toggleLoader }) {
     };
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ maxHeight: '500px' }}>
             <Table aria-label="customized table">
                 <TableHead>
                     <TableRow>

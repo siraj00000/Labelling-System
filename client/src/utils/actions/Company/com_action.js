@@ -1,10 +1,10 @@
 import API from "../../../API";
 
-export const fetchProducts = async (token, url) => {
+export const fetchProducts = async (token, url, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await API({
-                method: 'GET', url,
+                method: 'POST', url, data,
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`

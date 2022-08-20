@@ -67,7 +67,7 @@ export default function ProductTabel({ data, token, toggleLoader }) {
     return (
         <>
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            <TableContainer sx={{ width: '100%', maxHeight: '850px' }} component={Paper}>
+            <TableContainer sx={{ width: '100%', maxHeight: '500px' }} component={Paper}>
                 <Table aria-label="customized table">
                     <TableHead>
                         <TableRow>

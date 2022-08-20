@@ -69,11 +69,17 @@ const productCtrl = {
     },
     fetchProducts: async (req, res, next) => {
         try {
+            const { email } = req.body;
+            const company = await Company.where({ company_email: email }).findOne();
+            if (!company) return next(new ErrorResponse("Company does not found !!", 400));
+
             const search = req.query.product_name || "";
-            const features = new Apifeatures(Product.find({ product_name: { $regex: search, $options: 'i' } }), req.query)
+            const features = new Apifeatures(Product.where({ company: company._id }).find({ product_name: { $regex: search, $options: 'i' } }), req.query)
                 .sorting().paginating();
 
             const product = await features.query;
+
+            if (!product?.length) return res.status(200).json({ success: false });
 
             const newProduct = await insertNameInProduct(product, next);
 
@@ -111,9 +117,42 @@ const productCtrl = {
             next(error);
         }
     },
+    fetchProductByCompany: async (req, res, next) => {
+        try {
+            const { email } = req.body;
+            const company = await Company.where({ company_email: email }).findOne();
+            if (!company) return next(new ErrorResponse("Company does not found !!", 400));
+
+            const search = req.query.product_name || "";
+            const features = new Apifeatures(Product.where({ company: company._id }).find({ product_name: { $regex: search, $options: 'i' } }), req.query)
+                .sorting().paginating();
+
+            const product = await features.query;
+
+            if (!product?.length) return res.status(200).json({ success: false });
+
+            const newProduct = await insertNameInProduct(product, next);
+
+            let total = await Product.countDocuments();
+            let pages = await VerifyPagination(req, total);
+
+            if (!pages) return next(new ErrorResponse('No page found', 404));
+
+            if (newProduct) {
+                res.status(200).json({
+                    success: true,
+                    result: newProduct.length,
+                    pages,
+                    data: newProduct
+                });
+            }
+        } catch (error) {
+            next(error);
+        }
+    },
     updateProduct: async (req, res, next) => {
         try {
-            res.set("Access-Control-Allow-Origin", "http://54.201.112.129");
+            res.set("Access-Control-Allow-Origin", "http://localhost:3000");
 
             //? Parse body data  
             let body = JSON.parse(req.body.reqBody);
@@ -124,7 +163,7 @@ const productCtrl = {
             let file = req.files?.image;
 
             if (file) {
-                const result = await uploadImagesToCloudinary(file, next, "label");
+                const result = await uploadImagesToCloudinary(file, next, "Company");
                 if (!result || result === 0) return next(new ErrorResponse('Image not uploaded!', 404));
 
                 let newImages = [...body.prevImages, ...result];
@@ -144,7 +183,7 @@ const productCtrl = {
             } else {
                 if (body.videoURL === '') {
                     let video = req.files.video;
-                    const videoUploadRes = await uploadVideoToCloudinary(video, next, "label");
+                    const videoUploadRes = await uploadVideoToCloudinary(video, next, "Company");
                     if (!videoUploadRes || videoUploadRes === 0) return next(new ErrorResponse('Video not uploaded!', 404));
                     body["video_url"] = videoUploadRes;
                 } else {
@@ -181,47 +220,19 @@ const productCtrl = {
             next(error);
         }
     },
-    updateImages: async (req, res, next) => {
-        try {
-            const { public_id } = req.body;
-            if (!public_id) return next(new ErrorResponse("Please provide a valid image", 400));
-
-            const { id } = req.params;
-            const product = await Product.findById(id);
-
-            if (product) {
-                let list = [];
-                for (const key in product.image_list) {
-                    if (product.image_list[key].public_id !== public_id) {
-                        let element = product.image_list[key];
-                        list.push(element);
-                    }
-                }
-                req.body["image_list"] = list;
-            }
-
-            destroyImageFromCloudinary(public_id)
-                .then(async response => {
-                    const updateproduct = await Product.findByIdAndUpdate(id, req.body, { new: true });
-
-                    if (updateproduct) res.status(200).json({
-                        success: true,
-                        msg: "Image Deleted!"
-                    });
-                })
-                .catch(err => next(err));
-
-        } catch (error) {
-            console.log(error);
-            next(error);
-        }
-    },
     generateCSV: async (req, res, next) => {
         try {
+            const { email } = req.body;
+            const company = await Company.where({ company_email: email }).findOne();
+            if (!company) return next(new ErrorResponse("Company does not found !!", 400));
+
             const search = req.query.product_name || "";
-            const features = new Apifeatures(Product.find({ product_name: { $regex: search, $options: 'i' } }), req.query)
+            const features = new Apifeatures(Product.where({ company: company._id }).find({ product_name: { $regex: search, $options: 'i' } }), req.query)
                 .sorting().paginating();
+
             const queryProduct = await features.query;
+
+            if (!queryProduct?.length) return res.status(200).json({ success: false });
 
             const product = await insertNameInProduct(queryProduct, next);
 
@@ -242,6 +253,7 @@ const productCtrl = {
 
             writableStream.on("finish", () => {
                 res.status(200).json({
+                    success: true,
                     downloadURL: 'files/export/product.csv'
                 });
             });
@@ -292,6 +304,7 @@ const productCtrl = {
                 for (const key in product.image_list) {
                     if (product.image_list[key].public_id !== public_id) {
                         let element = product.image_list[key];
+                        console.log(typeof element);
                         list.push(element);
                     }
                 }
@@ -300,17 +313,18 @@ const productCtrl = {
 
             destroyImageFromCloudinary(public_id)
                 .then(async response => {
-                    const updateProduct = await Product.findByIdAndUpdate(id, req.body, { new: true });
-
-                    if (updateProduct) res.status(200).json({
-                        success: true,
-                        msg: "Image Deleted!"
-                    });
+                    console.log(response.result.result);
+                    if (response.result.result === "ok") {
+                        const updateProduct = await Product.findByIdAndUpdate(id, req.body, { new: true });
+                        if (updateProduct) res.status(200).json({
+                            success: true,
+                            msg: "Image Deleted!"
+                        });
+                    } else next(response.result.result);
                 })
                 .catch(err => next(err));
 
         } catch (error) {
-            console.log(error);
             next(error);
         }
     },

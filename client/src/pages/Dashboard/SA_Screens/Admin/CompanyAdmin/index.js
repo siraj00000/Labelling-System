@@ -33,13 +33,19 @@ const CompanyAdmin = ({ isResponse: RES, error: err, toggleLoader }) => {
     setResponse("0");
     try {
       // Fetching Company Method
-      let companyURL = `/api/fetch-company-admin?company_name=${search}&page=${page}&limit=12`;
+      let companyURL = `/api/fetch-company-admin?company_name=${search}&page=${page}&limit=50`;
       fetchCompany(token, companyURL)
         .then(res => {
-          setCompanyDetail(res?.data?.data);
-          setTotalPages(res?.data?.pages);
-          if (res?.data?.data.length === 0) setResponse('Collection is Empty');
-          else setResponse('1');
+          if (!res?.data.success) {
+            setResponse('Collection is Empty');
+            setCompanyDetail([]);
+            setTotalPages(1);
+          }
+          else {
+            setResponse('1');
+            setCompanyDetail(res?.data?.data);
+            setTotalPages(res?.data?.pages);
+          }
         }).catch(err => {
           setError(err);
           removeStatus(setError);
@@ -54,6 +60,7 @@ const CompanyAdmin = ({ isResponse: RES, error: err, toggleLoader }) => {
       let URL = `/api/generate-company-csv?company_name=${search}&page=${page}`;
       downloadCSV(token, URL)
         .then(({ data }) => {
+          if (!data.success) return false;
           window.open(SERVER_URL + data?.downloadURL, '_parent');
         })
         .catch(error => {

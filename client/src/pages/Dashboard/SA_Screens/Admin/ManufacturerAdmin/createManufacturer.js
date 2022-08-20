@@ -11,8 +11,11 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import CustomizeTitle from '../../../../../mui_theme/title';
+import { useNavigate } from 'react-router-dom';
+import swal from 'sweetalert';
 
 const CreateCompanyAdmin = () => {
+    let nav = useNavigate();
     // Field States
     const [manufacturer_email, setManufacturerEmail] = useState('');
     const [manufacturer, setManufacturer] = useState('');
@@ -26,14 +29,14 @@ const CreateCompanyAdmin = () => {
     const [companySign, setCompanySign] = useState('');
 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
-
+    
     React.useEffect(() => {
         try {
             setLoading(true);
             let companyURL = `/api/fetch-company-admin`;
             fetchCompany(token, companyURL)
                 .then(res => {
+                    if (!res?.data.success) setError('404');
                     setCompany(res.data?.data);
                 })
                 .catch(error => {
@@ -47,15 +50,6 @@ const CreateCompanyAdmin = () => {
             setLoading(false);
         }
     }, []);
-    // Clear Form after submit
-    const clearStates = () => {
-        setCompanySign('');
-        setRegisteredAddress('');
-        setPhoneOne(0);
-        setPhoneTwo(0);
-        setManufactureActiveStatus(true);
-        pincode(0);
-    };
 
     const verifyFieldValues = () => {
         if (pincode.length !== 6) {
@@ -69,7 +63,7 @@ const CreateCompanyAdmin = () => {
         } else return true;
     };
 
-    const insertManufacturerAdmin = async (e) => {
+    const insertManufacturer = async (e) => {
         e.preventDefault();
         let verify = verifyFieldValues();
         if (!verify) return false;
@@ -82,17 +76,25 @@ const CreateCompanyAdmin = () => {
         };
 
         try {
-            const { data } = await API.post("api/insert-manufacturer-admin", {
+            setLoading(true);
+            const response = await API.post("api/insert-manufacturer-admin", {
                 manufacturer_email, manufacturer, company_id: companySign,
                 pincode, manufacturer_active_status
             }, config);
 
-            setSuccess(data?.msg);
-            clearStates();
-            removeStatus(setSuccess);
+            swal({
+                title: "Success!",
+                text: response?.data?.msg,
+                icon: "success",
+                button: "Aww yiss!",
+            }).then(() => {
+                nav('/admins', { replace: true });
+                setLoading(false);
+            });
         } catch (error) {
             setError(error?.response.data.error);
             removeStatus(setError);
+            setLoading(false);
         }
     };
 
@@ -100,15 +102,16 @@ const CreateCompanyAdmin = () => {
         setManufactureActiveStatus(event.target.checked);
     };
 
+    if (error === '404') return <Alert severity='warning' >No company data found !!</Alert>;
+
     if (isLoading) {
         return <Splash loading={isLoading} />;
     }
 
     return (
-        <form className='form-sec' onSubmit={insertManufacturerAdmin}>
+        <form className='form-sec' onSubmit={insertManufacturer}>
             <CustomizeTitle text={'Add Manufacturer'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form'>
                 <div className='company_admin_form_field'>
                     <label>Manufacturer</label>
@@ -170,7 +173,7 @@ const CreateCompanyAdmin = () => {
                     </FormGroup>
                 </div>
             </div>
-            <button>Create Manufacturer Admin</button>
+            <button>Create Manufacturer</button>
         </form>
     );
 };

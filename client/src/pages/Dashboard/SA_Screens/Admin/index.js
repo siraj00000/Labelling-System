@@ -24,31 +24,28 @@ const AdminList = () => {
 
     useEffect(() => {
         // Fetching Category Method
-        let URL = `/api/category`
-        fetchCategory(token, URL)
-            .then(res => {
-                if (res.data?.data.length === 0) {
-                    setHasData(false);
-                }
-            })
-            .catch(err => console.log(err));
+        fetchCategory(token, `/api/category`)
+            .then(resc => {
+                // verify category list isn't empty 
+                if (!resc.data.success) return setHasData(false);
 
-        // Fetching Company Method
-        let companyURL = `/api/fetch-company-admin`
-        fetchCompany(token, companyURL)
-            .then(res => {
-                setCompanyDetail(res?.data?.data);
-                if (res?.data?.data.length === 0) {
-                    setResponse('Collection is Empty');
-                } else {
-                    setResponse('1');
-                }
-            }).catch(err => {
-                setError(err);
-                setTimeout(() => {
-                    setError("");
-                }, 5000);
-            });
+                // Fetching Company Method
+                fetchCompany(token, `/api/fetch-company-admin`)
+                    .then(res => {
+                        if (res?.data?.data?.length === 0) {
+                            setResponse('Collection is Empty');
+                        } else {
+                            setResponse('1');
+                            setCompanyDetail(res?.data?.data);
+                        }
+                    }).catch(err => {
+                        setError(err);
+                        setTimeout(() => {
+                            setError("");
+                        }, 5000);
+                    });
+            })
+            .catch(err => setError(err));
     }, [isLoading]);
 
 

@@ -74,14 +74,15 @@ const ProductDetail = () => {
                     </TableHead>
                     <TableBody>
                         {Object.entries(data).map(([key, value]) => {
-                            console.log(data);
                             let dateTypeKey = key === 'createdAt' || key === 'updatedAt';
-                            const year = dateTypeKey && value.split("T")[0] + " " + value.split("T")[1];
+                            const year = dateTypeKey && value.split("T")[0] + " " + value.split("T")[1].split('.')[0];
                             let title = (key === 'carousel_headings' || key === "carousel_text")
                                 && Object.values(value).join(', ');
+                            let isChecked = (typeof value === 'boolean') && (value === true ? "Yes" : "No");
                             return (
                                 <React.Fragment key={key + value}>
                                     {
+                                        (key !== 'company') &&
                                         (key !== 'brand') &&
                                         (key !== "category") &&
                                         (key !== "sub_category") &&
@@ -91,7 +92,7 @@ const ProductDetail = () => {
                                         (key !== '_id') && (key !== "__v") &&
                                         <StyledTableRow>
                                             <StyledTableCell align="left">{key}</StyledTableCell>
-                                            <StyledTableCell align="center">{title || year || value}</StyledTableCell>
+                                            <StyledTableCell align="center">{isChecked || title || year || value}</StyledTableCell>
                                         </StyledTableRow>
                                     }
                                 </React.Fragment>

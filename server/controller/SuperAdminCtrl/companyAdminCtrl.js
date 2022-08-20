@@ -28,6 +28,8 @@ const companyAdminDetail = {
                 .sorting().paginating();
             const companyAdminDetail = await features.query;
 
+            if (!companyAdminDetail?.length) return res.status(200).json({ success: false });
+
             let total = await CompanyAdmin.countDocuments();
             let pages = await VerifyPagination(req, total);
 
@@ -97,6 +99,8 @@ const companyAdminDetail = {
                 .sorting().paginating();
             const companyAdminDetail = await features.query;
 
+            if (!companyAdminDetail?.length) return res.status(200).json({ success: false });
+
             const csvStream = csv.format({ headers: true });
 
             if (!fs.existsSync('public/files/export')) {
@@ -114,6 +118,7 @@ const companyAdminDetail = {
 
             writableStream.on("finish", () => {
                 res.status(200).json({
+                    success: true,
                     downloadURL: 'files/export/company.csv'
                 });
             });

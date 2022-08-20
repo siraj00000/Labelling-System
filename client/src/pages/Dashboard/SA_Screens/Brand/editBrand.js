@@ -14,10 +14,12 @@ import '../Admin/admin.css';
 import VideoPlayer from '../../../../components/VideoPlayer';
 import Splash from '../../../../components/splash';
 import { removeStatus, token } from '../../../../utils/actions';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AppButton } from '../../../../components/StyledComponent';
+import swal from 'sweetalert';
 
 const EditBrand = () => {
+    let nav = useNavigate();
     const { data, id } = useLocation().state;
     const [isLoading, setLoading] = useState(false);
     // Field States
@@ -46,7 +48,6 @@ const EditBrand = () => {
     const [__file, setFile] = useState(data.image_list);
 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     const verifyUploads = () => {
         if (__file.length === 0) {
@@ -113,20 +114,25 @@ const EditBrand = () => {
 
                 updateBrand(id, token, updateForm)
                     .then(res => {
-                        setSuccess(res?.data.msg);
-                        removeStatus(setSuccess);
+                        swal({
+                            title: "Success!",
+                            text: res?.data?.msg,
+                            icon: "success",
+                            button: "Aww yiss!",
+                        }).then(() => {
+                            nav('/brands', { replace: true });
+                            setLoading(false);
+                        });
                     })
                     .catch(error => {
+                        setLoading(false);
                         setError(error?.response.data.error);
                         removeStatus(setError);
-                    }).finally(() => setLoading(false));
+                    });
             }
             catch (error) {
                 setError(error);
-                setSuccess("");
-                setTimeout(() => {
-                    setError("");
-                }, 5000);
+                removeStatus(setError);
             }
         }
     };
@@ -175,8 +181,12 @@ const EditBrand = () => {
             let reqBody = { public_id };
             updateImagesIntoDB(id, token, reqBody)
                 .then(res => {
-                    setSuccess(res?.data.msg);
-                    removeStatus(setSuccess);
+                    swal({
+                        title: "Success!",
+                        text: res?.data?.msg,
+                        icon: "success",
+                        button: "Aww yiss!",
+                    });
                 })
                 .catch(error => {
                     setError(error?.response.data.error);
@@ -201,12 +211,11 @@ const EditBrand = () => {
     let TYPE_VIDEO_URL = typeof videoURL === 'object' && Object.keys(videoURL).length === 0 ? "" : videoURL;
 
     return (
-        <form className='form-sec full-width' onSubmit={updateBrandDetail}>
+        <form className='form-structure' onSubmit={updateBrandDetail}>
             <CustomizeTitle text={'Update Brand'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
 
-            <div className='create-brand__flex'>
+            <div className='create-brand__flex full-width'>
                 <section className='brand_form'>
                     <div className='company_admin_form'>
                         <div className='company_admin_form_field'>

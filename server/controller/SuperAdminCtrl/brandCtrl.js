@@ -1,5 +1,6 @@
 const Brand = require("../../model/SuperAdminSchema/brandSchema");
 const CompanyAdmin = require("../../model/SuperAdminSchema/companyAdminSchema");
+const Manufacturer = require("../../model/SuperAdminSchema/manufacturerAdminSchema");
 const csv = require('fast-csv');
 const fs = require('fs');
 const { uploadImagesToCloudinary, uploadVideoToCloudinary, destroyImageFromCloudinary } = require("../../utils/upload");
@@ -10,7 +11,7 @@ const VerifyPagination = require("../../utils/actions");
 const brandCtrl = {
     insertBrand: async (req, res, next) => {
         try {
-            res.set("Access-Control-Allow-Origin", "http://54.201.112.129");
+            res.set("Access-Control-Allow-Origin", "http://localhost:3000");
 
             //? Parse body data  
             let body = JSON.parse(req.body.reqBody);
@@ -74,6 +75,8 @@ const brandCtrl = {
                 .sorting().paginating();
             const brandList = await features.query;
 
+            if (!brandList?.length) return res.status(200).json({ success: false });
+
             let total = await Brand.countDocuments();
             let pages = await VerifyPagination(req, total);
 
@@ -93,16 +96,36 @@ const brandCtrl = {
     },
     fetchBrandByEmail: async (req, res, next) => {
         try {
-            const { email } = req.params;
-            const brand = await Brand.where({ company_email: email }).find();
-            if (brand) {
-                res.status(200).json({
-                    success: true,
-                    result: brand?.length,
-                    msg: "Brand fetched!",
-                    data: brand
-                });
-            }
+            const { email } = req.body;
+            const company = await CompanyAdmin.where({ company_email: email }).findOne();
+            if (!company) return next(new ErrorResponse("Company does not found !!", 400));
+
+            const brand = await Brand.where({ company_id: company._id }).find();
+
+            res.status(200).json({
+                success: true,
+                result: brand?.length,
+                msg: "Brand fetched!",
+                data: brand
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
+    fetchBrandByManufacturer: async (req, res, next) => {
+        try {
+            const { email } = req.body;
+            const manufacturer = await Manufacturer.where({ manufacturer_email: email }).findOne();
+            if (!manufacturer) return next(new ErrorResponse("Invalid email !!", 400));
+
+            const brand = await Brand.where({ company_id: manufacturer.company_id }).find();
+
+            res.status(200).json({
+                success: true,
+                result: brand?.length,
+                msg: "Brand fetched!",
+                data: brand
+            });
         } catch (error) {
             next(error);
         }
@@ -117,7 +140,7 @@ const brandCtrl = {
                     result: brand?.length,
                     msg: "Brand fetched!",
                     data: brand
-                })
+                });
             }
         } catch (error) {
             next(error);
@@ -126,7 +149,7 @@ const brandCtrl = {
     updateBrandInfo: async (req, res, next) => {
         // Note: image and video word must provide as field name in the formData
         try {
-            res.set("Access-Control-Allow-Origin", "http://54.201.112.129");
+            res.set("Access-Control-Allow-Origin", "http://localhost:3000");
 
             const { id } = req.params;
             if (!id) return next(new ErrorResponse("Invalid brand entry!", 401));
@@ -161,7 +184,11 @@ const brandCtrl = {
                     if (!videoUploadRes || videoUploadRes === 0) return next(new ErrorResponse('Video not uploaded!', 404));
                     body["video_url"] = videoUploadRes;
                 } else {
-                    body["video_url"] = { url: body.videoURL, public_id: '' };
+                    if (typeof body.videoURL === 'object') {
+                        body["video_url"] = body.videoURL;
+                    } else {
+                        body["video_url"] = { url: body.videoURL, public_id: '' };
+                    }
                 }
             }
 
@@ -250,6 +277,8 @@ const brandCtrl = {
                 .sorting().paginating();
             const brand = await features.query;
 
+            if (!brand?.length) return res.status(200).json({ success: false });
+
             const csvStream = csv.format({ headers: true });
 
             if (!fs.existsSync('public/files/export')) {
@@ -267,6 +296,7 @@ const brandCtrl = {
 
             writableStream.on("finish", () => {
                 res.status(200).json({
+                    success: true,
                     downloadURL: 'files/export/brand.csv'
                 });
             });

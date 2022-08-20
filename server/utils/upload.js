@@ -62,7 +62,7 @@ const verifyImageSizaAndtype = async (file, next) => {
         removeTmp(file.tempFilePath);
         return next(new ErrorResponse("Size too large", 400));
     }
-
+    
     // file format must be jpeg or png
     if (file.mimetype !== 'image/jpeg' && file.mimetype !== 'image/png') {
         return next(new ErrorResponse("Incorrect file format", 400));

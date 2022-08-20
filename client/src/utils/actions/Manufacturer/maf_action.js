@@ -1,10 +1,10 @@
 import API from "../../../API";
 
-export const fetchLabels = async (token, url) => {
+export const fetchLabels = async (token, url, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await API({
-                method: 'GET', url,
+                method: 'POST', url, data,
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -17,18 +17,15 @@ export const fetchLabels = async (token, url) => {
     });
 };
 
-export const fetchBrandByEmail = async (token, url, email) => {
+export const fetchBrandByEmail = async (token, url, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await API({
-                method: 'GET', url,
+                method: 'POST', url, data,
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                data: {
-                    company_email: email
-                }
             });
             resolve(response);
         } catch (error) {

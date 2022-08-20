@@ -25,16 +25,15 @@ const Category = () => {
     useEffect(() => {
         const getCategory = async () => {
             setResponse("0");
-            let URL = `/api/category?category_name=${search}&page=${page}&limit=12`;
+            let URL = `/api/category?category_name=${search}&page=${page}&limit=50`;
             fetchCategory(token, URL)
                 .then(res => {
-                    setCategoryList(res?.data?.data);
-                    setTotalPages(res?.data?.pages);
-
-                    if (res?.data?.data.length === 0) {
+                    if (!res?.data?.success) {
                         setResponse('Collection is Empty');
                     } else {
                         setResponse('1');
+                        setCategoryList(res?.data?.data);
+                        setTotalPages(res?.data?.pages);
                     }
                 })
                 .catch(error => setError(error?.response.data.error));
@@ -56,6 +55,7 @@ const Category = () => {
             let URL = `/api/generate-category-csv?category_name=${search}&page=${page}`;
             downloadCSV(token, URL)
                 .then(({ data }) => {
+                    if (!data.success) return false;
                     window.open(SERVER_URL + data?.downloadURL, '_parent');
                 })
                 .catch(error => {
@@ -69,7 +69,8 @@ const Category = () => {
     const searchHandler = (value) => {
         setSearch(value);
         setPage(1);
-    }
+    };
+
     return (
         <div style={{ width: '80%' }}>
             {/* <BreadCrumbs /> */}
@@ -77,7 +78,7 @@ const Category = () => {
                 <div className='direction' >
                     {/* Tittle */}
                     <CustomizeTitle text={'Category'} />
-                    {isResponse === '1' || (isResponse.length <= 1 &&
+                    {isResponse === '1' || (isResponse?.length <= 1 &&
                         <CircularProgress size={25} sx={{ ml: 1 }} />
                     )}
                 </div>
@@ -107,9 +108,9 @@ const Category = () => {
             {error !== '' && <Alert severity="error">{error}</Alert>}
 
             {/* Responser */}
-            {isResponse.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
+            {isResponse?.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
 
-            {_categoryList.length !== 0 &&
+            {isResponse?.length <= 1 && _categoryList?.length !== 0 &&
                 <CategoryTables data={_categoryList} token={token} toggleLoader={toggleLoader} />
             }
 

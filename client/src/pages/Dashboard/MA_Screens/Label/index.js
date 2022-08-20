@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { removeStatus, token } from '../../../../utils/actions';
 import { fetchLabels } from '../../../../utils/actions/Manufacturer/maf_action';
-import { downloadCSV } from '../../../../utils/actions/sub-actions';
+import { downloadProductCSV } from '../../../../utils/actions/sub-actions';
 import Pagination from '../../../../components/Pagination';
 import Searchbar from '../../../../components/Searchbar';
 import Splash from '../../../../components/splash';
@@ -25,21 +25,23 @@ const Manufacturer = ({ user }) => {
     useEffect(() => {
         const getLabel = async () => {
             setResponse("0");
-            let URL = `/api/fetch-label?company_name=${search}&page=${page}&limit=12`;
-            fetchLabels(token, URL)
-                .then(res => {
-                    setLabelList(res?.data?.data);
-                    setTotalPages(res?.data?.pages);
+            const formData = new FormData();
+            formData.append("id", user._id);
 
-                    if (res?.data?.data?.length === 0) {
+            let URL = `/api/fetch-label?company_name=${search}&page=${page}&limit=50`;
+            fetchLabels(token, URL, formData)
+                .then(res => {
+                    if (!res?.data?.success) {
                         setResponse('Collection is Empty');
                     } else {
                         setResponse('1');
+                        setLabelList(res?.data?.data);
+                        setTotalPages(res?.data?.pages);
                     }
                 })
                 .catch(error => {
                     setError(error);
-                    removeStatus(setError)
+                    removeStatus(setError);
                 });
         };
         getLabel();
@@ -53,9 +55,13 @@ const Manufacturer = ({ user }) => {
     }
     const generateCSV = () => {
         try {
+            const formData = new FormData();
+            formData.append("id", user._id);
+
             let URL = `/api/generate-label-csv?company_name=${search}&page=${page}`;
-            downloadCSV(token, URL)
+            downloadProductCSV(token, URL, formData)
                 .then(({ data }) => {
+                    if (!data.success) return false;
                     window.open(SERVER_URL + data?.downloadURL, '_parent');
                 })
                 .catch(error => {
@@ -108,10 +114,8 @@ const Manufacturer = ({ user }) => {
             {/* Responser */}
             {isResponse.length > 1 && <Alert severity="warning">{isResponse}</Alert>}
 
-            {labelList.length !== 0 ?
+            {labelList.length !== 0 &&
                 <LabelTable data={labelList} token={token} toggleLoader={toggleLoader} />
-                :
-                <Alert severity="warning">Empty List</Alert>
             }
 
             <Pagination count={totalPages} setPage={setPage} />

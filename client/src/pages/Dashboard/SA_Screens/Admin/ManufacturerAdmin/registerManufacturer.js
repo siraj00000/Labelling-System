@@ -7,21 +7,24 @@ import API from '../../../../../API';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import '../../../../auth/auth.css';
 import '../admin.css';
+import { useNavigate } from 'react-router-dom';
+import swal from 'sweetalert';
+import Splash from '../../../../../components/splash';
 
 const RegisterManufacturer = () => {
+  let nav = useNavigate();
   // Field States
+  const [isLoading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [manufacturer, setManufacturer] = useState('');
   const [manufacturersList, setManufacturersList] = useState([]);
   // States for status 
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   // Fetch Manufacturer Detail
   React.useEffect(() => {
     try {
-      let URL = `/api/fetch-manufacturer-admin`
+      let URL = `/api/fetch-manufacturer-admin`;
       fetchManufactureDetail(token, URL)
         .then(res => {
           setManufacturersList(res?.data?.data);
@@ -33,12 +36,7 @@ const RegisterManufacturer = () => {
       setError(error.message);
     }
   }, []);
-  // Clear form after submit
-  const clearStates = () => {
-    setUsername("");
-    setPassword("");
-    setEmail("");
-  };
+
   // Register Admin Method
   const registerAdmin = async (e) => {
     e.preventDefault();
@@ -56,28 +54,32 @@ const RegisterManufacturer = () => {
       },
     };
     try {
-      const { data } = await API.post("api/auth/register", {
-        username, email, password, role: 3, company_email: manufacturer
+      setLoading(true);
+      const response = await API.post("api/auth/register", {
+        email, password, role: 3, company_email: manufacturer
       }, config);
 
-      setSuccess(data?.msg);
-      clearStates();
-      removeStatus(setSuccess);
+      swal({
+        title: "Success!",
+        text: response?.data?.msg,
+        icon: "success",
+        button: "Aww yiss!",
+      }).then(() => {
+        nav('/admins', { replace: true });
+        setLoading(false);
+      });
     } catch (error) {
       setError(error?.response.data.error);
+      setLoading(false);
       removeStatus(setError);
     }
   };
+  if (isLoading) return <Splash loading={isLoading} />;
   return (
     <form className='form-sec' onSubmit={registerAdmin}>
       <CustomizeTitle text={'Register Manufacturer Admin'} />
       {error !== '' && <Alert severity="error">{error}</Alert>}
-      {success !== '' && <Alert severity="success">{success}</Alert>}
       <div className='company_admin_form'>
-        <div className='company_admin_form_field'>
-          <label>username</label>
-          <input placeholder='mark' value={username} onChange={e => setUsername(e.target.value)} required />
-        </div>
         <div className='company_admin_form_field'>
           <label>email</label>
           <input type={'email'} placeholder='mark@example' value={email} onChange={e => setEmail(e.target.value)} required />

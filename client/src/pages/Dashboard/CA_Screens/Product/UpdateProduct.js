@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 // Mui icons
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
@@ -14,8 +14,10 @@ import CustomizeTitle from '../../../../mui_theme/title';
 import VideoPlayer from '../../../../components/VideoPlayer';
 import { AppButton } from '../../../../components/StyledComponent';
 import Splash from '../../../../components/splash';
+import swal from 'sweetalert';
 
 const UpdateProduct = () => {
+    let nav = useNavigate();
     let { state: { data, id } } = useLocation();
     const [isLoading, setLoading] = useState(false);
     const [heading, setHeading] = useState("");
@@ -32,8 +34,6 @@ const UpdateProduct = () => {
     const [__file, setFile] = useState(data.image_list);
 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
-
 
     const handleAdd = (prevList, val, func, setFunc) => {
         if (!val) return false;
@@ -80,8 +80,13 @@ const UpdateProduct = () => {
             let URL = `/api/update-product-image/${id}`;
             updateProductImage(token, URL, reqBody)
                 .then(res => {
-                    setSuccess(res?.data.msg);
-                    removeStatus(setSuccess);
+                    setLoading(true);
+                    swal({
+                        title: "Success!",
+                        text: res?.data?.msg,
+                        icon: "success",
+                        button: "Aww yiss!",
+                    }).then(() => setLoading(false));
                 })
                 .catch(error => {
                     setError(error);
@@ -120,7 +125,7 @@ const UpdateProduct = () => {
 
         try {
             setLoading(true);
-            let emptyVideo = videoURL === "" && selectedVideo === "" ;
+            let emptyVideo = videoURL === "" && selectedVideo === "";
             const reqBody = { carousel_headings, carousel_text, product_description, survey_feature, survey_link, videoURL, emptyVideo };
 
             //? Object Instance
@@ -150,9 +155,15 @@ const UpdateProduct = () => {
             let URL = `/api/update-product/${id}`;
             editProduct(token, URL, updateForm)
                 .then(res => {
-                    setLoading(false);
-                    setSuccess(res?.data?.msg);
-                    removeStatus(setSuccess);
+                    swal({
+                        title: "Success!",
+                        text: res?.data?.msg,
+                        icon: "success",
+                        button: "Aww yiss!",
+                    }).then(() => {
+                        nav('/products', { replace: true });
+                        setLoading(false);
+                    });
                 })
                 .catch(error => {
                     setError(error);
@@ -177,7 +188,6 @@ const UpdateProduct = () => {
         <form className='form-sec width-100per' onSubmit={updateProductToDB} >
             <CustomizeTitle text={'Update Product'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='create-brand__flex'>
                 <section className='brand_form'>
                     <div className='company_admin_form'>
@@ -241,7 +251,7 @@ const UpdateProduct = () => {
                     </div>
 
                     {/* Submit Button */}
-                    <button style={{ width: "100%", margin: '5% 0' }}>Update Brand</button>
+                    <button style={{ width: "100%", margin: '5% 0' }}>Update Product</button>
                     {/* Submit Button */}
                     {TYPE_VIDEO_URL !== '' && (video_url !== '' || videoURL !== '') &&
                         (

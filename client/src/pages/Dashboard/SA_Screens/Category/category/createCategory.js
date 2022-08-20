@@ -4,13 +4,17 @@ import API from '../../../../../API';
 import '../../../../auth/auth.css';
 import '../../Admin/admin.css';
 import CustomizeTitle from '../../../../../mui_theme/title';
-import { token } from '../../../../../utils/actions';
+import { removeStatus, token } from '../../../../../utils/actions';
+import { useNavigate } from 'react-router-dom';
+import swal from 'sweetalert';
+import Splash from '../../../../../components/splash';
 
 const CreateCategory = () => {
+    let nav = useNavigate();
     // Field States
+    const [isLoading, setLoading] = useState(false);
     const [category, setCategory] = useState('');
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     const insertCompanyAdmin = async (e) => {
         e.preventDefault();
@@ -22,32 +26,34 @@ const CreateCategory = () => {
         };
 
         try {
-            const { data } = await API.post("api/insert-category", {
+            setLoading(true);
+            const response = await API.post("api/insert-category", {
                 category_name: category
             }, config);
 
-            setSuccess(data?.msg);
-            setError("");
-            setTimeout(() => {
-                setSuccess("");
-            }, 5000);
+            swal({
+                title: "Success!",
+                text: response?.data?.msg,
+                icon: "success",
+                button: "Aww yiss!",
+            }).then(() => {
+                nav('/category', { replace: true });
+                setLoading(false);
+            });
 
         } catch (error) {
+            setLoading(false);
             setError(error?.response.data.error);
-            setSuccess("");
-            setTimeout(() => {
-                setError("");
-            }, 5000);
+            removeStatus(setError);
         } finally {
             setCategory('');
         }
     };
-
+    if (isLoading) return <Splash loading={isLoading} />;
     return (
         <form className='form-sec half-width' onSubmit={insertCompanyAdmin}>
             <CustomizeTitle text={'Add Category'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form '>
                 <div className='company_admin_form_field full_width_cont'>
                     <label>Category</label>

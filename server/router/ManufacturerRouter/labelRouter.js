@@ -5,7 +5,7 @@ const { authManufacturerAdmin } = require("../../middleware/authSubAdmin");
 
 labelRouter
     .post('/insert-label', protect, authManufacturerAdmin, insertLabel)
-    .get('/fetch-label', protect, authManufacturerAdmin, fetchLabel)
+    .post('/fetch-label/', protect, authManufacturerAdmin, fetchLabel)
     .get('/generate-label-csv', protect, authManufacturerAdmin, generateCSV)
     .delete('/delete-label/:id', protect, authManufacturerAdmin, deleteLabel);
 

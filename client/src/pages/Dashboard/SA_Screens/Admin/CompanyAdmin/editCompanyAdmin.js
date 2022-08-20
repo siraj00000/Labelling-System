@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { updateCompanyAdmin } from '../../../../../utils/actions/companyData';
-import { token } from '../../../../../utils/actions';
+import { removeStatus, token } from '../../../../../utils/actions';
 import Alert from '@mui/material/Alert';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import CustomizeTitle from '../../../../../mui_theme/title';
 import '../../../../auth/auth.css';
 import '../admin.css';
+import { fetchSubCategory } from '../../../../../utils/actions/category';
+import Splash from '../../../../../components/splash';
+import swal from 'sweetalert';
 
 const EditCompanyAdmin = () => {
+    let nav = useNavigate();
     let { state } = useLocation();
     let { data, id } = state;
     // Field States
@@ -20,13 +26,35 @@ const EditCompanyAdmin = () => {
         phone_two: 0,
         registered_address: "",
     });
+    const [isLoading, setLoading] = useState(false);
+    const [selectedSubCategory, setSelectedSubCategory] = useState(data.sub_category);
+    const [subCategoryList, setSubCategoryList] = useState([]);
     const [company_active_status, setCompanyActiveStatus] = useState(data.company_active_status);
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     useEffect(() => {
-        setInputVal(data);
-    }, []);
+        try {
+            setInputVal(data);
+            fetchSubCategory(token, `/api/fetch-subcategory`)
+                .then(res => {
+                    let data = res.data;
+                    if (!data.success) return setError("404");
+
+                    let subCatList = [];
+                    for (let index = 0; index < data?.data.length; index++) {
+                        const element = data?.data[index];
+                        if (element._id !== selectedSubCategory[0]?._id) {
+                            subCatList.push(element);
+                        }
+                    }
+                    setSubCategoryList(subCatList);
+                })
+                .catch(err => setError(err));
+        } catch (error) {
+            setError(error);
+            removeStatus(setError);
+        }
+    }, [selectedSubCategory]);
 
     const setData = (e) => {
         let { name, value } = e.target;
@@ -40,6 +68,7 @@ const EditCompanyAdmin = () => {
 
     const updateHandler = async (e) => {
         e.preventDefault();
+        setLoading(true);
         let url = `api/update-company-admin/${id}`;
 
         const reqBody = {
@@ -47,15 +76,21 @@ const EditCompanyAdmin = () => {
             phone_one: inputVal.phone_one,
             phone_two: inputVal.phone_two,
             registered_address: inputVal.registered_address,
+            sub_category: selectedSubCategory,
             company_active_status,
         };
 
         updateCompanyAdmin(url, token, reqBody)
             .then(res => {
-                setSuccess(res.data?.msg);
-                setTimeout(() => {
-                    setSuccess("");
-                }, 5000);
+                swal({
+                    title: "Success!",
+                    text: res?.data?.msg,
+                    icon: "success",
+                    button: "Aww yiss!",
+                }).then(() => {
+                    nav('/admins', { replace: true });
+                    setLoading(false);
+                });
             }).catch(error => {
                 setError(error?.response.data.error);
                 setTimeout(() => {
@@ -68,11 +103,21 @@ const EditCompanyAdmin = () => {
         setCompanyActiveStatus(event.target.checked);
     };
 
+    const handleCategorySelection = (item) => {
+        let subCat = [item];
+        setSelectedSubCategory(subCat);
+    };
+
+    const removeSubCategory = () => {
+        setSelectedSubCategory([]);
+    };
+
+    if (isLoading) return <Splash loading={isLoading} />;
+
     return (
         <form className='form-sec' onSubmit={updateHandler}>
-            <CustomizeTitle text={'Edit Company Admin'} />
+            <CustomizeTitle text={'Edit Company'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form'>
                 <div className='company_admin_form_field'>
                     <label>Pincode</label>
@@ -107,7 +152,32 @@ const EditCompanyAdmin = () => {
                     </FormGroup>
                 </div>
             </div>
-            <button>Update Company Admin</button>
+            {selectedSubCategory.length !== 0 &&
+                <div>
+                    <label>Selected Sub Category</label>
+                    <div className='sub-catory-list_not_seleted'>
+                        <p onClick={removeSubCategory}
+                            className='sub-category-chips _selected'
+                        >{selectedSubCategory[0]?.sub_category} <CloseIcon /></p>
+                    </div>
+                </div>}
+            {subCategoryList.length !== 0 &&
+                < div >
+                    <label>Sub Categories</label>
+                    <div className='sub-catory-list_not_seleted'>
+                        {subCategoryList?.map((item, index) => {
+                            return (
+                                <p
+                                    key={index}
+                                    onClick={() => handleCategorySelection(item, index)}
+                                    className='sub-category-chips _selected'
+                                >{item?.sub_category} <AddIcon /></p>
+                            );
+                        })}
+                    </div>
+                </div>
+            }
+            <button>Update Company</button>
         </form>
     );
 };

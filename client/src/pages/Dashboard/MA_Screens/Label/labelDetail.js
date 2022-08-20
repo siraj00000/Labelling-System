@@ -32,6 +32,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function LabelDetail() {
     const { state } = useLocation();
     let { data } = state;
+    console.log(data);
     return (
         <TableContainer sx={{ width: '80%' }} component={Paper}>
             <Table aria-label="customized table">
@@ -47,17 +48,20 @@ export default function LabelDetail() {
                         const year = dateTypeKey && value.split("T")[0] + value.split("T")[1];
                         let status = key === 'tag_active' && (value ? "Active" : 'In Active');
                         let URLKey = (key === 'DS1' || key === 'DS2' || key === 'shortDS1' || key === 'shortDS2') && Object.values(value).join(',\n');
-                        
+
                         return (
-                            <>
+                            <React.Fragment key={key + value}>
                                 {
-                                    (key !== 'parent_category_id') && (key !== '_id') && (key !== "__v") &&
-                                    <StyledTableRow key={key + value}>
+                                    (key !== 'manufacture_id') &&
+                                    (key !== 'brand_id') &&
+                                    (key !== 'product_id') &&
+                                    (key !== '_id') && (key !== "__v") &&
+                                    <StyledTableRow >
                                         <StyledTableCell align="left">{key}</StyledTableCell>
-                                            <StyledTableCell align="center">{URLKey || year || status || value}</StyledTableCell>
+                                        <StyledTableCell align="center">{URLKey || year || status || value}</StyledTableCell>
                                     </StyledTableRow>
                                 }
-                            </>
+                            </React.Fragment>
                         );
                     })}
                 </TableBody>

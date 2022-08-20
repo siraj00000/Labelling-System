@@ -26,9 +26,10 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
   const [isResponse, setResponse] = useState('');
   const [error, setError] = useState('');
   const [canProceed, setCanProceed] = useState("");
-  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [filterBy, setFilterBy] = useState(0);
+  const [filters, setFilters] = useState({ manufacturer: "", company_name: "" });
 
   useEffect(() => {
     if (companyDetail?.length === 0) {
@@ -42,16 +43,18 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
     const fetchManufactureData = async () => {
       setResponse("0");
       try {
-        let URL = `/api/fetch-manufacturer-admin?manufacturer=${search}&page=${page}&limit=1`;
+        let URL = `/api/fetch-manufacturer-admin?manufacturer=${filters.manufacturer}&company_name=${filters.company_name}&page=${page}&limit=50`;
         fetchManufactureDetail(token, URL)
           .then(res => {
-            let response = res?.data
-            setManufacturerDetail(response?.data);
-            setTotalPages(response?.pages);
-            if (response?.data.length === 0) {
+            let response = res?.data;
+            if (!response?.success) {
               setResponse('Collection is Empty');
+              setManufacturerDetail([]);
+              setTotalPages(1);
             } else {
               setResponse('1');
+              setManufacturerDetail(response?.data);
+              setTotalPages(response?.pages);
             }
           });
 
@@ -62,7 +65,7 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
     };
 
     fetchManufactureData();
-  }, [search, page]);
+  }, [filters.manufacturer, filters.company_name, page]);
 
   if (!canProceed) {
     return <Alert severity="warning" style={{ marginTop: 10 }}>Empty company list</Alert>;
@@ -70,9 +73,10 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
 
   const generateCSV = () => {
     try {
-      let URL = `/api/generate-manufacturer-csv?manufacturer=${search}&page=${page}`;
+      let URL = `/api/generate-manufacturer-csv?manufacturer=${filters.manufacturer}&company_name=${filters.company_name}&page=${page}`;
       downloadCSV(token, URL)
         .then(({ data }) => {
+          if (!data.success) return false;
           window.open(SERVER_URL + data?.downloadURL, '_parent');
         })
         .catch(error => {
@@ -85,9 +89,10 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
   };
 
   const searchHandler = (value) => {
-    setPage(1)
-    setSearch(value)
-  }
+    setPage(1);
+    if (filterBy === 0) setFilters({ manufacturer: value, company_name: "" });
+    if (filterBy === 1) setFilters({ manufacturer: "", company_name: value });
+  };
 
   return (
     <div className='ca_container'>
@@ -105,7 +110,11 @@ const ManufacturerAdmin = ({ companyDetail, toggleLoader }) => {
 
         {/* Add company admin */}
         <Box className='direction'>
-          <Searchbar handler={searchHandler} />
+          <Searchbar
+            handler={searchHandler}
+            searchBy={['manufacturer', 'company']}
+            setFilterBy={setFilterBy}
+          />
           <Button
             variant="contained"
             startIcon={<AddIcon />}

@@ -7,17 +7,20 @@ import '../../../../auth/auth.css';
 
 import '../admin.css';
 import { removeStatus, token } from '../../../../../utils/actions';
+import { useNavigate } from 'react-router-dom';
+import swal from 'sweetalert';
+import Splash from '../../../../../components/splash';
 
 const RegisterCompanyAdmin = () => {
+    let nav = useNavigate();
     // Field States
+    const [isLoading, setLoading] = useState(false);
     const [company, setCompany] = useState([]);
     const [company_email, setCompanyEmail] = useState("");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [username, setUsername] = useState('');
 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     React.useEffect(() => {
         try {
@@ -35,15 +38,7 @@ const RegisterCompanyAdmin = () => {
             removeStatus(setError);
         }
     }, []);
-
-    const clearStates = () => {
-        setUsername("");
-        setEmail("");
-        setPassword("");
-        setCompanyEmail("");
-    };
-
-
+ 
     const registerAdmin = async (e) => {
         e.preventDefault();
         // Password Verification
@@ -52,29 +47,33 @@ const RegisterCompanyAdmin = () => {
             removeStatus(setError);
             return false;
         };
+        setLoading(true)
         // Data posting
-        let bodyData = { username, email, password, role: 2, company_email };
+        let bodyData = { email, password, role: 2, company_email };
         CompanyAdminRegistration(token, bodyData)
             .then(res => {
-                setSuccess(res.data?.msg);
-                removeStatus(setSuccess);
-                clearStates();
+                swal({
+                    title: "Success!",
+                    text: res?.data?.msg,
+                    icon: "success",
+                    button: "Aww yiss!",
+                }).then(() => {
+                    nav('/admins', { replace: true });
+                    setLoading(false);
+                });
             })
             .catch(error => {
                 setError(error);
                 removeStatus(setError);
+                setLoading(false);
             });
     };
+    if (isLoading) return <Splash loading={isLoading} />;
     return (
         <form className='form-sec' onSubmit={registerAdmin}>
             <CustomizeTitle text={'Register Company Admin'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form'>
-                <div className='company_admin_form_field'>
-                    <label>username</label>
-                    <input placeholder='mark' value={username} onChange={e => setUsername(e.target.value)} required />
-                </div>
                 <div className='company_admin_form_field'>
                     <label>email</label>
                     <input type={'email'} placeholder='mark@example' value={email} onChange={e => setEmail(e.target.value)} required />

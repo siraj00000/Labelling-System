@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { removeStatus, token } from '../../../../utils/actions';
 import { insertProductToDB } from '../../../../utils/actions/Manufacturer/maf_action';
-import '../../../auth/auth.css';
-import '../../SA_Screens/Brand/brand.css';
-import '../../SA_Screens/Admin/admin.css';
-import './product.css';
 import { Alert, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import CustomizeTitle from '../../../../mui_theme/title';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useLocation, useNavigate } from 'react-router-dom';
 import swal from 'sweetalert';
 import VideoPlayer from '../../../../components/VideoPlayer';
 import { AppButton } from '../../../../components/StyledComponent';
 import Splash from '../../../../components/splash';
+// CSS
+import '../../../auth/auth.css';
+import '../../SA_Screens/Brand/brand.css';
+import '../../SA_Screens/Admin/admin.css';
+import './product.css';
 
 const CreateProduct2 = () => {
     let nav = useNavigate();
@@ -23,6 +24,9 @@ const CreateProduct2 = () => {
     // getting data from previous screen
     const { state: { data } } = useLocation();
     let isServiceFeatureEnable = data?.reqHelp;
+
+    let SUBCAT_FEATURE = data?.sub_category_feature;
+
     // states declaration
     const [heading, setHeading] = useState("");
     const [text, setText] = useState("");
@@ -37,8 +41,7 @@ const CreateProduct2 = () => {
     const [free_brand_maintenance_duration, setMaintenanceDuration] = useState("");
     const [one_click_reorder_feature, setOneClickReorder] = useState(false);
     const [reorder_link, setReOrderLink] = useState("");
-    const [features, setFeature] = useState([]);
-    const [featuresList, setFeatureList] = useState([]);
+    const [featureMap, setFeatureMap] = useState({});
     const [uploadedImageList, setUploadedImageList] = useState([]);
     const [selectedVideo, setSelectedVideo] = useState('');
     const [video_url, setVideo] = useState('');
@@ -47,30 +50,20 @@ const CreateProduct2 = () => {
 
     // States for status 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
-    const clearStates = () => {
-        setHeading("");
-        setText("");
-        setCarouselHeading([]);
-        setCarouselText([]);
-        setProductDescription('');
-        setSurveyFeature(false);
-        setSurveyLink('');
-        setGeneralWarrantyDuration('');
-        setSpecialWarrantyType('');
-        setSpecialWarrantyDuration('');
-        setMaintenanceDuration('');
-        setOneClickReorder(false);
-        setReOrderLink("");
-        setFeature([]);
-        setFeatureList([]);
-        setUploadedImageList([]);
-        setSelectedVideo('');
-        setVideo('');
-        setVideoURL('');
-        setFile([]);
-    };
+    React.useEffect(() => {
+        const createFeatureObject = () => {
+            let mapFeature = {};
+            let __featureList = [...SUBCAT_FEATURE];
+            for (let index = 0; index < __featureList.length; index++) {
+                const key = __featureList[index];
+                mapFeature[key] = '';
+            }
+            setFeatureMap(mapFeature);
+        };
+
+        createFeatureObject();
+    }, [SUBCAT_FEATURE]);
 
     const handleAdd = (prevList, val, func, setFunc) => {
         if (!val) return false;
@@ -102,6 +95,17 @@ const CreateProduct2 = () => {
         let imageDetail = [];
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
+
+            if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+                swal({
+                    title: 'Invalid file format !!',
+                    text: `Only jpeg or png are allowed`,
+                    icon: `info`,
+                    buttons: `Try Again`
+                });
+                return false;
+            }
+
             images.push(URL.createObjectURL(file));
             imageDetail.push(file);
         }
@@ -120,6 +124,17 @@ const CreateProduct2 = () => {
             });
             return false;
         }
+
+        if (file.type !== 'video/mp4') {
+            swal({
+                title: 'Invalid file format !!',
+                text: `Only mp4 format is allowed`,
+                icon: `info`,
+                buttons: `Try Again`
+            });
+            return false;
+        }
+
         if (videoURL !== '') return false;
         let video = URL.createObjectURL(file);
         setVideo(video);
@@ -138,16 +153,14 @@ const CreateProduct2 = () => {
         setSelectedVideo("");
     };
 
-    const setfeatureObj = () => {
-        let featuresObj = {};
-        let featureArr = [...featuresList];
-        let subFeatureArr = data?.sub_category_feature;
-
-        for (let index = 0; index < subFeatureArr.length; index++) {
-            const key = subFeatureArr[index];
-            featuresObj[key] = featureArr[index] || null;
-        }
-        return featuresObj;
+    const handleInsertFeature = (e) => {
+        let { name, value } = e.target;
+        setFeatureMap((preval) => {
+            return {
+                ...preval,
+                [name]: value
+            };
+        });
     };
 
     const insertProduct = (e) => {
@@ -155,7 +168,6 @@ const CreateProduct2 = () => {
         try {
             setLoading(true);
             let emptyVideo = videoURL === '' && selectedVideo === '';
-            let _feature = setfeatureObj();
             let reqBody = {
                 product_name: data?.productName,
                 company_email: data?.company_email,
@@ -175,7 +187,7 @@ const CreateProduct2 = () => {
                 reorder_link,
                 survey_feature: survey_feature || data.brand?.survey_feature,
                 survey_link: survey_link || data.brand?.survey_link,
-                feature: _feature,
+                feature: featureMap,
                 videoURL,
                 emptyVideo,
                 image_list: __file.length === 0 && data.brand?.image_list,
@@ -191,10 +203,15 @@ const CreateProduct2 = () => {
             let URL = `/api/insert-product`;
             insertProductToDB(token, URL, formData)
                 .then(res => {
-                    setSuccess(res?.data?.msg);
-                    setLoading(false);
-                    clearStates();
-                    removeStatus(setSuccess);
+                    swal({
+                        title: "Success!",
+                        text: res?.data?.msg,
+                        icon: "success",
+                        button: "Aww yiss!",
+                    }).then(() => {
+                        nav('/products', { replace: true });
+                        setLoading(false);
+                    });
                 })
                 .catch(error => {
                     setLoading(false);
@@ -209,17 +226,15 @@ const CreateProduct2 = () => {
         }
     };
 
-    if (isLoading) {
-        return <Splash loading={isLoading} />;
-    }
+    if (isLoading) return <Splash loading={isLoading} />;
+
     return (
         <form className='form-sec width-100per' onSubmit={insertProduct}>
             <span className='direction-row'>
                 <ArrowBackIcon fontSize='medium' onClick={() => nav(-1)} /> Back
             </span>
-            <CustomizeTitle text={'Create Label'} />
+            <CustomizeTitle text={'Create Product'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='create-brand__flex'>
                 <section className='brand_form'>
                     <div className='company_admin_form'>
@@ -282,26 +297,18 @@ const CreateProduct2 = () => {
                             </div>
                         }
                         {/* Add Features */}
-                        <div className='company_admin_form_field'>
-                            <label>Features</label>
-                            <input placeholder='features...' className='right-spacing feature' value={features} onChange={e => setFeature(e.target.value)} />
-                            <AddIcon className='addlist__icon'
-                                onClick={() => {
-                                    if (data.sub_category_feature.length === featuresList.length) return false;
-                                    handleAdd(featuresList, features, setFeatureList, setFeature);
-                                }}
-                            />
-                            <div className='feature_list'>
-                                {data?.sub_category_feature?.map((item, index) => {
-                                    return (
-                                        <div key={index} className='feature_list_item'>
-                                            <h6 >{item}</h6>
-                                            <h6 >{featuresList.length !== 0 && featuresList[index]}</h6>
-                                        </div>
-                                    );
-                                })}
+                        {SUBCAT_FEATURE?.map((item, index) => (
+                            <div className='company_admin_form_field' key={index}>
+                                <label>{`Feature ${index + 1} ( ${item} )`}</label>
+                                <input
+                                    name={item}
+                                    value={featureMap[item]}
+                                    onChange={handleInsertFeature}
+                                    placeholder={`type ${item}...`}
+                                    className='right-spacing feature'
+                                />
                             </div>
-                        </div>
+                        ))}
                     </div>
 
 
@@ -336,7 +343,7 @@ const CreateProduct2 = () => {
 
                     {/* ================== BUTTONs & VIDEO PLAYER  =============== */}
                     {/* Submit Button */}
-                    <button style={{ width: "100%", marginBottom: '5%' }}>Create Brand</button>
+                    <button style={{ width: "100%", marginBottom: '5%' }}>Create Product</button>
                     {/* Submit Button */}
 
                     {videoURL === '' && video_url !== '' && (
@@ -420,22 +427,6 @@ const CreateProduct2 = () => {
                                                 <p
                                                     key={index}
                                                     onClick={() => handleRemove(carousel_text, index, setCarouselText)}
-                                                    className='sub-category-chips selected-chip'
-                                                >{item} <CloseIcon /></p>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            }
-                            {featuresList?.length !== 0 &&
-                                <div style={{ margin: "15px 0" }}>
-                                    <label>Features List</label>
-                                    <div className='chips'>
-                                        {featuresList?.map((item, index) => {
-                                            return (
-                                                <p
-                                                    key={index}
-                                                    onClick={() => handleRemove(featuresList, index, setFeatureList)}
                                                     className='sub-category-chips selected-chip'
                                                 >{item} <CloseIcon /></p>
                                             );

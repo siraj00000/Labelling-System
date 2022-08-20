@@ -29,28 +29,30 @@ const CreateProduct = ({ user }) => {
 
     // States for status 
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
     React.useEffect(() => {
         const fetchData = () => {
             // For brands
-            let email = user.company_email;
-            let URL = `/api/fetch-brand-by-email`;
-            fetchBrandByEmail(token, URL, email)
+            const formData = new FormData();
+            formData.append('email', user.company_email);
+
+            fetchBrandByEmail(token, `/api/fetch-brand-by-email`, formData)
                 .then(res => {
-                    setBrandList(res?.data?.data);
+                    if (res.data.data.length === 0) return setError("404");
+                    setBrandList(res.data?.data);
                 })
                 .catch(error => {
                     setError(error);
-                    removeStatus(setSuccess);
+                    removeStatus(setError);
                 });
 
+            // For Category
             let catURL = `/api/category`;
             fetchSubCtgByCtg(token, catURL)
                 .then(res => setCategory(res?.data?.data))
                 .catch(error => {
                     setError(error);
-                    removeStatus(setSuccess);
+                    removeStatus(setError);
                 });
         };
         fetchData();
@@ -94,7 +96,7 @@ const CreateProduct = ({ user }) => {
                 });
         } catch (error) {
             setError(error);
-            removeStatus(setSuccess);
+            removeStatus(setError);
         }
     };
 
@@ -135,13 +137,15 @@ const CreateProduct = ({ user }) => {
             company_email: user.company_email,
             sub_category_feature: subCatFeatures
         };
-        nav("/products/create-product2", { state: { data } });
+        nav("/products/CreateProduct", { state: { data } });
     };
+
+    if (error === '404') return <Alert severity="warning">No brand data found !!</Alert>;
+
     return (
         <form className='form-sec width-100per' onSubmit={handleProductFormSubmit} >
-            <CustomizeTitle text={'Create Label'} />
+            <CustomizeTitle text={'Create Product'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form'>
                 <section className='width-80per direction-corner wrap-container'>
                     <div className='company_admin_form_field'>

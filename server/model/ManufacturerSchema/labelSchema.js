@@ -49,11 +49,11 @@ const LabelSchema = new mongoose.Schema({
         type: Array,
         required: [true, "DS1 does not found !!"]
     },
-    DS1_count: {
+    DS1_URL: {
         type: String,
         default: null
     },
-    DS2_count: {
+    DS2_URL: {
         type: String,
         default: null
     },
@@ -65,12 +65,6 @@ const LabelSchema = new mongoose.Schema({
         type: Array,
         required: [true, "Short DS2 count does not found !!"]
     },
-    DS1_URL: {
-        type: String
-    }, 
-    DS2_URL: {
-        type: String
-    }, 
     owner_mobile: {
         type: String,
         default: null

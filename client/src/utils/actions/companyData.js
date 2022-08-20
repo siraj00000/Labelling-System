@@ -132,3 +132,23 @@ export const deleteManufacturer = async (url, token, email) => {
         data: { email }
     });
 };
+
+// Reset Sub Admin Password
+export const resetUserPassword = (token, URL, body) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await API({
+                method: 'PUT',
+                url: URL,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                data: body
+            });
+            resolve(response);
+        } catch (error) {
+            reject(error?.response.data.error);
+        }
+    });
+};  

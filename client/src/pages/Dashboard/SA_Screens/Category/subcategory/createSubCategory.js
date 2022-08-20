@@ -9,41 +9,31 @@ import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { fetchCategory } from '../../../../../utils/actions/category';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import { token } from '../../../../../utils/actions';
+import { removeStatus, token } from '../../../../../utils/actions';
+import { useNavigate } from 'react-router-dom';
+import swal from 'sweetalert';
+import Splash from '../../../../../components/splash';
 
 const CreateSubCategory = () => {
+    let nav = useNavigate();
     // Field States
+    const [isLoading, setLoading] = useState(false);
     const [category, setCategory] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [sub_category, setSubCategory] = useState('');
     const [feature, setFeature] = useState('');
     const [featureList, setFeatureList] = useState([]);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
     const [sub_category_active_status, setSubCategoryActiveStatus] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        let URL = `/api/category`
+        let URL = `/api/category`;
         fetchCategory(token, URL)
             .then(res => {
                 setCategory(res?.data?.data);
             })
             .catch(error => setError(error?.response.data.error));
     }, []);
-
-    const clearStates = () => {
-        setSubCategory("");
-        setFeature("");
-        setFeatureList([]);
-        setSubCategoryActiveStatus(true);
-        setSelectedCategory([]);
-        let URL = `/api/category`
-        fetchCategory(token, URL)
-            .then(res => {
-                setCategory(res?.data?.data);
-            })
-            .catch(error => setError(error?.response.data.error));
-    };
 
     const insertCompanyAdmin = async (e) => {
         e.preventDefault();
@@ -58,26 +48,28 @@ const CreateSubCategory = () => {
         };
 
         try {
-            const { data } = await API.post("api/insert-subcategory", {
+            setLoading(true);
+            const response = await API.post("api/insert-subcategory", {
                 parent_category_id: selectedCategory[0]._id,
                 sub_category,
                 sub_category_active_status,
                 feature: featureList
             }, config);
 
-            setSuccess(data?.msg);
-            clearStates();
-            setError("");
-            setTimeout(() => {
-                setSuccess("");
-            }, 5000);
-
+            swal({
+                title: "Success!",
+                text: response?.data?.msg,
+                icon: "success",
+                button: "Aww yiss!",
+            }).then(() => {
+                nav('/subcategory', { replace: true });
+                setLoading(false);
+            });
+            
         } catch (error) {
+            setLoading(false);
             setError(error?.response.data.error);
-            setSuccess("");
-            setTimeout(() => {
-                setError("");
-            }, 5000);
+            removeStatus(setError);
         }
     };
 
@@ -119,11 +111,12 @@ const CreateSubCategory = () => {
         setSelectedCategory(_list);
     };
 
+    if (isLoading) return <Splash loading={isLoading} />;
+
     return (
         <form className='form-sec' onSubmit={insertCompanyAdmin}>
             <CustomizeTitle text={'Add Sub-Category'} />
             {error !== '' && <Alert severity="error">{error}</Alert>}
-            {success !== '' && <Alert severity="success">{success}</Alert>}
             <div className='company_admin_form '>
                 <div className='company_admin_form_field '>
                     <label>Sub-Category</label>

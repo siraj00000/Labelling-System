@@ -36,10 +36,19 @@ const manufacturerAdminCtrl = {
     },
     fetchManufacturerDetail: async (req, res, next) => {
         try {
-            const search = req.query.manufacturer || "";
-            const features = new Apifeatures(ManufacturerAdmin.find({ manufacturer: { $regex: search, $options: 'i' } }), req.query)
+            const searchManufacture = req.query.manufacturer || "";
+            const searchCompany = req.query.company_name || "";
+
+            const features = new Apifeatures(ManufacturerAdmin.find(
+                {
+                    manufacturer: { $regex: searchManufacture, $options: 'i' },
+                    company_name: { $regex: searchCompany, $options: 'i' }
+                })
+                , req.query)
                 .sorting().paginating();
             const manufacturerDetail = await features.query;
+
+            if (!manufacturerDetail?.length) return res.status(200).json({ success: false });
 
             let total = await ManufacturerAdmin.countDocuments();
             let pages = await VerifyPagination(req, total);
@@ -47,7 +56,7 @@ const manufacturerAdminCtrl = {
             if (!pages) return next(new ErrorResponse('No page found', 404));
 
             if (manufacturerDetail)
-                res.status(200).json({ success: true, msg: "Detail fetched!", data: manufacturerDetail, pages });
+                res.status(200).json({ success: true, msg: "Detail fetched!", pages, data: manufacturerDetail });
         } catch (error) {
             next(error);
         }
@@ -55,25 +64,17 @@ const manufacturerAdminCtrl = {
     updateManufacturerDetail: async (req, res, next) => {
         try {
             const { id } = req.params;
-            const { pincode, registered_address, phone_one, phone_two, manufacturer_active_status } = req.body;
-
             if (!id) return next(new ErrorResponse("condition does'nt match", 404));
 
-            const company = await CompanyAdmin.findById({ _id: company_id });
-
-            if (!company) return next(new ErrorResponse("Invalid company", 404));
-
-            const updatManufacturerDetail = await ManufacturerAdmin.findByIdAndUpdate(id, {
-                pincode, manufacturer_active_status, registered_address, phone_one, phone_two
-            }, {
-                new: true
-            });
-
-            return res.status(201).json({
-                success: true,
-                msg: "Manufacturer update!",
-                data: updatManufacturerDetail,
-            });
+            const updateManufacturerDetail = await ManufacturerAdmin.findByIdAndUpdate(id, req.body, { new: true });
+          
+            if (updateManufacturerDetail) {
+                return res.status(201).json({
+                    success: true,
+                    msg: "Manufacturer update!",
+                    data: updateManufacturerDetail,
+                });
+            }
         } catch (error) {
             next(error);
         }
@@ -82,7 +83,7 @@ const manufacturerAdminCtrl = {
         try {
             const { id } = req.params;
             const { email } = req.body;
-            
+
             if (!id) return next(new ErrorResponse("data is empty", 404));
 
             await User.where({ email }).findOneAndDelete();
@@ -104,6 +105,8 @@ const manufacturerAdminCtrl = {
                 .sorting().paginating();
             const manufacturerDetail = await features.query;
 
+            if (!manufacturerDetail?.length) return res.status(200).json({ success: false });
+
             const csvStream = csv.format({ headers: true });
 
             if (!fs.existsSync('public/files/export')) {
@@ -115,13 +118,14 @@ const manufacturerAdminCtrl = {
                 }
             }
 
-            const writableStream = fs.createWriteStream('public/files/export/company.csv');
+            const writableStream = fs.createWriteStream('public/files/export/manufacture.csv');
 
             csvStream.pipe(writableStream);
 
             writableStream.on("finish", () => {
                 res.status(200).json({
-                    downloadURL: 'files/export/company.csv'
+                    success: true,
+                    downloadURL: 'files/export/manufacture.csv'
                 });
             });
 
