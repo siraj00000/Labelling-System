@@ -24,8 +24,8 @@ const labelCtrl = {
             req.body["shortDS1"] = req.body["DS1"];
             req.body["shortDS2"] = req.body["DS2"];
 
-            req.body["DS1_URL"] = `http://34.219.139.83/${req.body["shortDS1"]}`
-            req.body["DS2_URL"] = `http://34.219.139.83/${req.body["shortDS2"]}`
+            req.body["DS1_URL"] = `http://35.91.32.64/${req.body["shortDS1"]}`
+            req.body["DS2_URL"] = `http://35.91.32.64/${req.body["shortDS2"]}`
 
             const label = await Label.create(req.body);
             if (label) {
