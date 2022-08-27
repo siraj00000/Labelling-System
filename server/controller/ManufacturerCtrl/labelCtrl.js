@@ -24,8 +24,8 @@ const labelCtrl = {
             req.body["shortDS1"] = req.body["DS1"];
             req.body["shortDS2"] = req.body["DS2"];
 
-            req.body["DS1_URL"] = `http://35.91.32.64/${req.body["shortDS1"]}`
-            req.body["DS2_URL"] = `http://35.91.32.64/${req.body["shortDS2"]}`
+            req.body["DS1_URL"] = `http://localhost:8000/${req.body["shortDS1"]}`;
+            req.body["DS2_URL"] = `http://localhost:8000/${req.body["shortDS2"]}`;
 
             const label = await Label.create(req.body);
             if (label) {
@@ -69,14 +69,11 @@ const labelCtrl = {
     },
     fetchLabelByCompany: async (req, res, next) => {
         try {
-            const { email } = req.body;
-            if (!email) return next(new ErrorResponse("Company email does not found !!", 400));
-
-            const company = await Company.where({ company_email: email }).findOne();
-            if (!company) return next(new ErrorResponse("No company exists !!", 400));
+            const { id } = req.body;
+            if (!id) return next(new ErrorResponse("Manufacturer does not found !!", 400));
 
             const search = req.query.company_name || "";
-            const features = new Apifeatures(Label.where({ company_email }).find({ company_name: { $regex: search, $options: 'i' } }), req.query)
+            const features = new Apifeatures(Label.where({ manufacture_id: id }).find({ company_name: { $regex: search, $options: 'i' } }), req.query)
                 .sorting().paginating();
             const label = await features.query;
 
@@ -133,9 +130,10 @@ const labelCtrl = {
     },
     generateCSV: async (req, res, next) => {
         try {
-            const { id } = req.body;
+            const { uId } = req.body;
+            if (!uId) return next(new ErrorResponse("Manufacturer does not found !!", 400));
             const search = req.query.company_name || "";
-            const features = new Apifeatures(Label.where({ manufacture_id: id }).find({ company_name: { $regex: search, $options: 'i' } }), req.query)
+            const features = new Apifeatures(Label.where({ manufacture_id: uId }).find({ company_name: { $regex: search, $options: 'i' } }), req.query)
                 .sorting().paginating();
 
             const label = await features.query;

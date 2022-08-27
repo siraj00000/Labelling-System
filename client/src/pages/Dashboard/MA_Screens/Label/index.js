@@ -56,12 +56,12 @@ const Manufacturer = ({ user }) => {
     const generateCSV = () => {
         try {
             const formData = new FormData();
-            formData.append("id", user._id);
+            formData.append("uId", user._id);
 
             let URL = `/api/generate-label-csv?company_name=${search}&page=${page}`;
             downloadProductCSV(token, URL, formData)
                 .then(({ data }) => {
-                    if (!data.success) return false;
+                    if (!data) return false;
                     window.open(SERVER_URL + data?.downloadURL, '_parent');
                 })
                 .catch(error => {
