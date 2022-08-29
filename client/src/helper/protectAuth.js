@@ -14,7 +14,6 @@ export const ProtectAuth = () => {
                 },
             });
             // Persist Auth User Role
-            // localStorage.setItem("role", response?.data?.user?.role);
             resolve(response?.data.user);
         } catch (error) {
             reject(error?.response.data.error);

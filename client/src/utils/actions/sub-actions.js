@@ -29,7 +29,7 @@ export const downloadProductCSV = (token, url, data) => {
             });
             resolve(response);
         } catch (error) {
-            if (error.message) return reject(error.message)
+            if (error.message) return reject(error.message);
             reject(error?.response.data.error);
         }
     });

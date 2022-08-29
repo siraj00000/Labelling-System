@@ -9,10 +9,10 @@ import {
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from './mui_theme/theme';
 import { role, token } from './utils/actions';
-import Splash from './components/splash';
-import PageNotFound from './components/PageNotFound/404Notfound';
 import { ProtectAuth } from './helper/protectAuth';
 import { Alert } from '@mui/material';
+import Splash from './components/splash';
+import PageNotFound from './components/PageNotFound/404Notfound';
 
 // App Screen Lazy import
 const LoginScreen = lazy(() => import('./pages/auth/LoginScreen'));
