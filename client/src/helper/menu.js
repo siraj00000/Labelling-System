@@ -12,22 +12,22 @@ const drawerMenuList = (navigate) => {
         {
             routeName: "Admin",
             Icon: SupervisorAccountOutlinedIcon,
-            handler: () => navigate("/admins")
+            handler: () => navigate("/ls-admin/admins")
         },
         {
             routeName: "Category",
             Icon: GridViewIcon,
-            handler: () => navigate("/category")
+            handler: () => navigate("/ls-admin/category")
         },
         {
             routeName: "Sub Category",
             Icon: ListAltIcon,
-            handler: () => navigate("/subcategory")
+            handler: () => navigate("/ls-admin/subcategory")
         },
         {
             routeName: "Brand",
             Icon: DiamondOutlinedIcon,
-            handler: () => navigate("/brands")
+            handler: () => navigate("/ls-admin/brands")
         }
     ];
 
@@ -35,7 +35,7 @@ const drawerMenuList = (navigate) => {
         {
             routeName: "Product",
             Icon: AddBoxOutlinedIcon,
-            handler: () => navigate("/products")
+            handler: () => navigate("/ls-admin/products")
         },
     ];
 
@@ -43,7 +43,7 @@ const drawerMenuList = (navigate) => {
         {
             routeName: "Label",
             Icon: LabelOutlinedIcon,
-            handler: () => navigate("/label")
+            handler: () => navigate("/ls-admin/label")
         },
     ];
 

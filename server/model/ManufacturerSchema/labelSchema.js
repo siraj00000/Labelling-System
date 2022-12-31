@@ -49,14 +49,6 @@ const LabelSchema = new mongoose.Schema({
         type: Array,
         required: [true, "DS1 does not found !!"]
     },
-    DS1_URL: {
-        type: String,
-        default: null
-    },
-    DS2_URL: {
-        type: String,
-        default: null
-    },
     shortDS1: {
         type: Array,
         required: [true, "Short DS1 count does not found !!"],

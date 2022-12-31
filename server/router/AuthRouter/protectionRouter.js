@@ -26,8 +26,8 @@ authProtectionRouter
 
             res.status(200).json({ user });
         } catch (error) {
-            next(new ErrorResponse("No, Not authorized to access this route", 401));
-        }
+            next(new ErrorResponse("Not authorized to access this route", 401));
+        }   
     });
 
 module.exports = authProtectionRouter;

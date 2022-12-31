@@ -58,7 +58,7 @@ const TopAppbar = ({ open, setOpen }) => {
                         variant="h6"
                         noWrap
                         component="div"
-                        onClick={() => nav('/')}
+                        onClick={() => nav('/ls-admin')}
                         className='direction'
                         sx={{ cursor: 'pointer', gap: 1 }}
                     >

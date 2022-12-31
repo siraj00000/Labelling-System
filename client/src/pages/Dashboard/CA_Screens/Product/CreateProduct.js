@@ -137,7 +137,7 @@ const CreateProduct = ({ user }) => {
             company_email: user.company_email,
             sub_category_feature: subCatFeatures
         };
-        nav("/products/CreateProduct", { state: { data } });
+        nav("/ls-admin/products/CreateProduct", { state: { data } });
     };
 
     if (error === '404') return <Alert severity="warning">No brand data found !!</Alert>;

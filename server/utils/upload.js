@@ -114,5 +114,6 @@ const destroyImageFromCloudinary = (public_id) => {
 module.exports = {
     uploadImagesToCloudinary,
     uploadVideoToCloudinary,
-    destroyImageFromCloudinary
+    destroyImageFromCloudinary,
+    uploadWarrantyInvoiceImage: uploadImage
 };

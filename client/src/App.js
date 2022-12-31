@@ -1,4 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import {
   BrowserRouter,
   Routes,
@@ -8,11 +9,22 @@ import {
 } from "react-router-dom";
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from './mui_theme/theme';
-import { role, token } from './utils/actions';
+import { role, token, endutoken } from './utils/actions';
 import { ProtectAuth } from './helper/protectAuth';
 import { Alert } from '@mui/material';
 import Splash from './components/splash';
-import PageNotFound from './components/PageNotFound/404Notfound';
+
+// Others
+const PageNotFound = lazy(() => import('./components/PageNotFound/404Notfound'));
+const UserPanel = lazy(() => import('./pages/UserPanel'));
+const ProductDisplayPage = lazy(() => import('./pages/UserPanel/PDPs/productDisplayPage'));
+const ProductPage = lazy(() => import('./pages/UserPanel/PDPs/product_display_page'));
+const WarrantyRegistration = lazy(() => import('./pages/UserPanel/WarrantyRegistration'));
+const ErrorReporting = lazy(() => import('./pages/UserPanel/ReportError'));
+const EndUserLogin = lazy(() => import('./pages/UserPanel/EndUserAuthentication/endUserlogin'));
+const EndUserSignUp = lazy(() => import('./pages/UserPanel/EndUserAuthentication/endUserRegistration'));
+const EndUserOTPScreen = lazy(() => import('./pages/UserPanel/EndUserAuthentication/OTPScreen'));
+const UserPanelLayout = lazy(() => import('./pages/UserPanel/user_panel_layout'));
 
 // App Screen Lazy import
 const LoginScreen = lazy(() => import('./pages/auth/LoginScreen'));
@@ -70,10 +82,13 @@ const App = () => {
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={PrivateRoute(token, <Dashboard user={user} />, "/login")} >
+            {/* ====================x==================== */}
+
+            {/* Admin Panel Routes */}
+            <Route path="/ls-admin" element={PrivateRoute(token, <Dashboard user={user} />, "/ls-admin/login")} >
               {/* SUPER ADMIN ROUTES */}
               {role === 1 &&
-                <Route path='/' element={AdminRoute(role === 1, <Outlet />)}>
+                <Route path='/ls-admin' element={AdminRoute(role === 1, <Outlet />)}>
                   {/* SUPER ADMIN ROUTES */}
                   <Route path='admins' element={<AdminList />} />
 
@@ -111,7 +126,7 @@ const App = () => {
 
               {/* COMPANY ADMIN ROUTES */}
               {role === 2 &&
-                <Route path='/' element={AdminRoute(role === 2, <Outlet />, "/")}>
+                <Route path='/ls-admin' element={AdminRoute(role === 2, <Outlet />, "/")}>
                   <Route path='products' element={<Product user={user} />} />
                   <Route path='products/create-product' element={<CreateProduct user={user} />} />
                   <Route path='products/CreateProduct' element={<CreateProduct2 />} />
@@ -122,7 +137,7 @@ const App = () => {
 
               {/* MANUFACTURER ADMIN ROUTES */}
               {role === 3 &&
-                <Route path='/' element={AdminRoute(role === 3, <Outlet />, "/")}>
+                <Route path='/ls-admin' element={AdminRoute(role === 3, <Outlet />, "/")}>
                   <Route path='label' element={<Label user={user} />} />
                   <Route path='label/create-label' element={<CreateLabel user={user} />} />
                   <Route path='label/detail' element={<LabelDetail user={user} />} />
@@ -130,10 +145,37 @@ const App = () => {
               }
 
             </Route>
-            <Route path="/login" element={PrivateRoute(!token, <LoginScreen />, "/")} />
-            <Route path='/forgetpassword' element={PrivateRoute(!token, <ForgetPassword />, "/")} />
-            <Route path='/passwordreset/:resetToken' element={PrivateRoute(!token, <ResetPassword />, "/")} />
+            <Route path="ls-admin/login" element={PrivateRoute(!token, <LoginScreen />, "/ls-admin")} />
+            <Route path='ls-admin/forgetpassword' element={PrivateRoute(!token, <ForgetPassword />, "/ls-admin")} />
+            <Route path='ls-admin/passwordreset/:resetToken' element={PrivateRoute(!token, <ResetPassword />, "/ls-admin")} />
+
+            {/* ====================x==================== */}
+
+            {/* User Panel Routes */}
+            <Route path='/' element={<UserPanelLayout />}>
+              <Route index element={<UserPanel />} />
+              <Route path='/:type/:dsN' element={<Outlet />}>
+                <Route index element={<ProductDisplayPage />} />
+                <Route path="product" element={<ProductPage />} />
+                <Route path='register-warranty' element={<WarrantyRegistration />} />
+                <Route path='report-error' element={<ErrorReporting />} />
+              </Route>
+            </Route>
+
+            {/* End User Authentication */}
+            <Route path="/user" element={PrivateRoute(!endutoken, <Outlet />, "/")}>
+              <Route path='login' element={<EndUserLogin />} />
+              <Route path='sign-up' element={<EndUserSignUp />} />
+              <Route path='verification' element={<EndUserOTPScreen />} />
+              <Route path='forgetpassword' element={<ForgetPassword />} />
+            </Route>
+
+            {/* ====================x==================== */}
+
+            {/* Unknow Route */}
             <Route path='*' element={<PageNotFound />} />
+
+            {/* ====================x==================== */}
           </Routes>
         </BrowserRouter>
       </ThemeProvider>

@@ -39,7 +39,7 @@ const EditCategory = () => {
                 icon: "success",
                 button: "Aww yiss!",
             }).then(() => {
-                nav('/category', { replace: true });
+                nav('/ls-admin/category', { replace: true });
                 setLoading(false);
             });
 

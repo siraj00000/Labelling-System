@@ -10,7 +10,7 @@ const ForgetPassword = () => {
 
     useEffect(() => {
         if (localStorage.getItem('authToken')) {
-            document.location = "/"
+            document.location = "/ls-admin"
         }
     }, [])
 

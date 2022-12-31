@@ -47,7 +47,7 @@ const EditManufactureAdmin = () => {
                         icon: "success",
                         button: "Aww yiss!",
                     }).then(() => {
-                        nav('/admins', { replace: true });
+                        nav('/ls-admin/admins', { replace: true });
                         setLoading(false);
                     });
                 }).catch(error => {

@@ -25,7 +25,6 @@ const categoryCtrl = {
                 data: category,
                 pages,
                 msg: "Categories fetched!",
-
             });
         } catch (error) {
             next(error);

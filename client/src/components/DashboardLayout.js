@@ -4,12 +4,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TopAppbar from './TopAppbar';
 import AppDrawer from './Drawer';
 import BreadCrumbs from './BreadCrumbs';
-import { useLocation } from 'react-router-dom';
 
 export default function DashboardLayout(props) {
     const [open, setOpen] = React.useState(false);
-    const location = useLocation();
-    console.log(location.pathname);
     
     return (
         <Box sx={{ display: 'flex' }}>

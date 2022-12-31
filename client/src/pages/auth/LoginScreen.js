@@ -13,7 +13,7 @@ const LoginScreen = () => {
     useEffect((e) => {
         if (localStorage.getItem('authToken')) {
             e.preventDefault();
-            document.location = "/";
+            document.location = "/ls-admin";
         }
     }, []);
 
@@ -41,7 +41,7 @@ const LoginScreen = () => {
                 const adminType = successMsg(data.userInfo.role);
                 setSuccess(`${adminType} admin login successfull!`);
                 setError("");
-                document.location = "/";
+                document.location = "/ls-admin";
             }
 
         } catch (error) {
@@ -67,7 +67,7 @@ const LoginScreen = () => {
                         <label>Password</label>
                         <input type={'password'} value={password} onChange={e => setPassword(e.target.value)} required placeholder='Password' />
                         <button type='submit'>Login</button>
-                        <NavLink to="/forgetpassword">Forget Password</NavLink>
+                        <NavLink to="/ls-admin/forgetpassword">Forget Password</NavLink>
                     </form>
                 </section>
             </div>

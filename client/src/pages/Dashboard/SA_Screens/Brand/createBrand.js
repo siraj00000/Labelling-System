@@ -111,7 +111,7 @@ const CreateBrand = () => {
                             icon: "success",
                             button: "Aww yiss!",
                         }).then(() => {
-                            nav('/brands', { replace: true });
+                            nav('/ls-admin/brands', { replace: true });
                             setLoading(false);
                         });
                     })

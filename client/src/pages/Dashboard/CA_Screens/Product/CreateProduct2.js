@@ -209,7 +209,7 @@ const CreateProduct2 = () => {
                         icon: "success",
                         button: "Aww yiss!",
                     }).then(() => {
-                        nav('/products', { replace: true });
+                        nav('/ls-admin/products', { replace: true });
                         setLoading(false);
                     });
                 })

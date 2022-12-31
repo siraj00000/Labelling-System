@@ -11,10 +11,10 @@ const ResetPassword = () => {
     const [success, setSuccess] = useState('');
     // Getting token from params    
     let { resetToken } = useParams();
-
+    console.log(resetToken);
     useEffect(() => {
         if (localStorage.getItem('authToken')) {
-            document.location = "/"
+            document.location = "/ls-admin"
         }
     }, [])
 
@@ -54,7 +54,7 @@ const ResetPassword = () => {
                     <form onSubmit={resetPasswordHandler}>
                         {error !== '' && <Alert severity="error">{error}</Alert>}
                         {success !== '' && <Alert severity="success" style={{position: "relative"}}>{success}
-                            <NavLink to='/login' className='login_link'>Login</NavLink>
+                            <NavLink to='/ls-admin/login' className='login_link'>Login</NavLink>
                         </Alert>}
                         <h1>Reset Password</h1>
                         <label>New Password</label>

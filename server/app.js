@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config(); 
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -20,6 +20,10 @@ const productRouter = require("./router/CompanyRouter/productRouter");
 const uploadRouter = require("./router/CompanyRouter/upload");
 const labelRouter = require("./router/ManufacturerRouter/labelRouter");
 const authProtectionRouter = require("./router/AuthRouter/protectionRouter");
+const pdpRouter = require("./router/EndUser/pdpRouter");
+const warrantyRouter = require("./router/EndUser/warrantyRouter");
+const errorReportRouter = require("./router/EndUser/errorReportRouter");
+const OTPVerificationRouter = require("./router/EndUser/endUserVerificationRouter");
 
 const app = express();
 app.use(express.json());
@@ -58,6 +62,12 @@ app.use("/api", productRouter);
 
 app.use("/api", labelRouter);
 
+// ============== End User ================== //
+app.use("/api", pdpRouter);
+app.use("/api", warrantyRouter);
+app.use("/api", errorReportRouter);
+app.use("/api", OTPVerificationRouter);
+
 // Download CSV
 app.use("/files", express.static(path.join(__dirname, 'public/files')));
 
@@ -66,6 +76,7 @@ app.use("/", statusRouter);
 
 // upload
 app.use("/api", uploadRouter);
+
 
 // Error Handler (should be the last piece of middleware)
 app.use(errorHandler);

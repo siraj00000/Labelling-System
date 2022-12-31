@@ -35,7 +35,7 @@ const EditSubCategory = () => {
                         icon: "success",
                         button: "Aww yiss!",
                     }).then(() => {
-                        nav('/subcategory', { replace: true });
+                        nav('/ls-admin/subcategory', { replace: true });
                         setLoading(false);
                     });
                 })

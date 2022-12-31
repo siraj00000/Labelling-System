@@ -6,27 +6,23 @@ const BreadCrumbs = props => {
     const { location: { pathname }, navigate } = props?.router;
     const pathnames = pathname.split('/').filter(x => x);
     // Won't allow to render on homepage
-    let matchPath = pathname !== '/';
     const navigationHandler = (path, condition) => {
-        if (!condition) navigate(path);
+        if (path === 'ls-admin') return navigate(`/${path}`);
+        else if (!condition) navigate(`/ls-admin/${path}`);
     };
     return (
         <div>
             <MUIBreadcrumbs aria-label="breadcrumb">
-                {matchPath && <Link
-                    color="inherit"
-                    sx={{ cursor: 'pointer', textDecoration: 'none' }}
-                    onClick={() => navigate('/')}>Home</Link>
-                }
                 {pathnames.map((name, index) => {
                     let lastPath = pathnames[pathnames.length - 1] === name;
+                    let matchPath = name === 'ls-admin';
                     return (
                         <Link
                             key={index}
                             color={lastPath ? 'primary' : 'inherit'}
                             sx={{ cursor: 'pointer', textDecoration: 'none' }}
-                            onClick={() => navigationHandler(`/${name}`, lastPath)}>
-                            {name}
+                            onClick={() => navigationHandler(name, lastPath)}>
+                            {matchPath ? "Home" : name}
                         </Link>
                     );
                 })}

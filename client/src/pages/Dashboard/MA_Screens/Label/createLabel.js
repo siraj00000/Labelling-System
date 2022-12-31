@@ -104,7 +104,7 @@ const CreateLabel = ({ user }) => {
             icon: "success",
             button: "Aww yiss!",
           }).then(() => {
-            nav('/label', { replace: true });
+            nav('/ls-admin/label', { replace: true });
             setLoading(false);
           });
         })
@@ -194,7 +194,7 @@ const CreateLabel = ({ user }) => {
         {/* SERIAL NUMBER */}
         <div className='company_admin_form_field'>
           <label>Serial number</label>
-          <input placeholder='40...' type={'number'} value={serialNumber} onChange={e => setSerialNumber(e.target.value)} required />
+          <input placeholder='40...' type={'number'} value={serialNumber} onChange={e => setSerialNumber(e.target.value)} min={1} required />
         </div>
         {/* TAG NUMBER */}
         <div className='company_admin_form_field'>

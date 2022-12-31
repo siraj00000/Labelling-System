@@ -1,0 +1,108 @@
+.--card-swiper {
+  overflow-y: visible !important;
+  width: 100%;
+  height: max-content;
+  border: 1px solid;
+  background: #000;
+}
+
+.--card-swiper img {
+  width: 100%;
+  height: 300px;
+  border: 1px solid;
+  object-fit: cover;
+}
+
+.-swiper-slide {
+  display: flex;
+  flex-direction: column;
+}
+
+.-swiper-content {
+  position: absolute;
+  bottom: -100px;
+  z-index: 50;
+}
+
+.slideStyles {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.sliderStyles {
+  position: relative;
+  height: 400px;
+}
+
+.rightArrowStyles {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  right: -32px;
+  font-size: 45px;
+  color: #000;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.leftArrowStyles {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  left: -32px;
+  font-size: 45px;
+  color: #000;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.dotsContainerStyles {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.dotActive::after {
+  content: "●●";
+  padding: 0 10px;
+  background: #2987c2ff;
+  color: transparent;
+  border-radius: 2pc;
+  font-size: 6px !important;
+  position: relative;
+  bottom: 3px;
+}
+
+.dotInactive::before {
+  content: "●";
+  font-size: 20px;
+  padding: 0;
+  cursor: pointer;
+  color: #dee1e6ff;
+}
+
+@media (max-width: 992px) {
+  .sliderStyles {
+    max-height: 300px;
+  }
+
+  .dotActive::after {
+    bottom: 1px;
+  }
+
+  .-product-heading {
+    font-size: 30px;
+    line-height: 38px;
+  }
+
+  .-product-text {
+    font-size: 15px;
+    line-height: 18px;
+    color: #9095a1ff;
+  }
+}

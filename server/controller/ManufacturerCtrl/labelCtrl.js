@@ -24,9 +24,6 @@ const labelCtrl = {
             req.body["shortDS1"] = req.body["DS1"];
             req.body["shortDS2"] = req.body["DS2"];
 
-            req.body["DS1_URL"] = `http://localhost:8000/${req.body["shortDS1"]}`;
-            req.body["DS2_URL"] = `http://localhost:8000/${req.body["shortDS2"]}`;
-
             const label = await Label.create(req.body);
             if (label) {
                 res.status(200).json({
@@ -34,8 +31,6 @@ const labelCtrl = {
                     msg: "Label has been inserted successfully !!",
                 });
             }
-
-
         } catch (error) {
             next(error);
         }
@@ -197,7 +192,8 @@ module.exports = labelCtrl;
 const generateURL = (type, brand, product_id, batch_number, serial_number) => {
     let urlList = [];
     for (let index = 0; index < serial_number; index++) {
-        let url = `${type}/${brand.brand}_${product_id}_${batch_number}_${index + 1}`;
+        let brandName = brand?.brand.trim().split(" ").join(""); 
+        let url = `${type}/${brandName}_${product_id}_${batch_number}_${index + 1}`;
         urlList.push(url);
     }
     return urlList;

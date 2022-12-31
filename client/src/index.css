@@ -6,6 +6,11 @@
   font-family: "Poppins", sans-serif !important;
   outline: none;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -32,53 +37,81 @@ code {
   z-index: 1111;
 }
 
-.direction{
+.direction {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.direction-row{
+.direction-row {
   display: flex;
   align-items: center;
 }
 
-.direction-col{
+.direction-col {
   display: flex;
   flex-direction: column;
 }
 
-.direction-corner{
+.direction-corner {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.wrap-container{
+.wrap-container {
   flex-wrap: wrap;
 }
 
-.margin-vertical{
+.margin-vertical {
   margin: 2% 0;
 }
 
-.splash-styling1{
+.splash-styling1 {
   width: 100%;
   height: 50vh;
 }
 
-.width-100per{
+.width-100per {
   width: 100% !important;
 }
 
-.width-80per{
+.width-80per {
   width: 80%;
 }
 
-.width-20per{
+.width-20per {
   width: 20%;
 }
 
-.margin-0per{
+.margin-0per {
   margin: 0% !important;
+}
+
+.w-half {
+  width: 50%;
+}
+
+.w-60per {
+  width: 60%;
+}
+
+.w-40per {
+  width: 40%;
+}
+
+.h-screen {
+  height: 100vh;
+}
+
+.h-500 {
+  height: 500px;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
 }
