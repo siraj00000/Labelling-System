@@ -1,60 +1,69 @@
-import { useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/effect-creative";
+
 import "./swiper.css";
-const slideStyles = {
-    width: "100%",
-    height: "100%",
-    borderRadius: "10px",
-    backgroundSize: "contain",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat"
-};
 
-const ProductImageSlider = ({ slides }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const goToPrevious = () => {
-        const isFirstSlide = currentIndex === 0;
-        const newIndex = isFirstSlide ? slides.length - 1 : currentIndex - 1;
-        setCurrentIndex(newIndex);
-    };
-    const goToNext = () => {
-        const isLastSlide = currentIndex === slides.length - 1;
-        const newIndex = isLastSlide ? 0 : currentIndex + 1;
-        setCurrentIndex(newIndex);
-    };
-    const goToSlide = (slideIndex) => {
-        setCurrentIndex(slideIndex);
-    };
-    const slideStylesWidthBackground = {
-        backgroundImage: `url(${slides[currentIndex].img.url})`,
-    };
+// import required modules
+import { EffectCreative, Autoplay } from "swiper";
 
+function ProductCrousel({ content }) {
     return (
-        <div className={"sliderStyles"}>
-            <div>
-                <div onClick={goToPrevious} className={"leftArrowStyles"}>
-                    ❰
-                </div>
-                <div onClick={goToNext} className={"rightArrowStyles"}>
-                    ❱
-                </div>
-            </div>
-            <div style={slideStylesWidthBackground} className={"slideStyles"}></div>
-            <div className="dotsContainerStyles">
-                {slides.map((slide, slideIndex) => (
-                    <div
-                        key={slideIndex}
-                        onClick={() => goToSlide(slideIndex)}
-                    >
-                        <span className={slideIndex === currentIndex ? "dotActive" : "dotInactive"}></span>
-                    </div>
-                ))}
-            </div>
-            <div>
-                <h4 className="-product-heading">{slides[currentIndex]?.heading}</h4>
-                <h5 className="-product-text">{slides[currentIndex]?.text}</h5>
-            </div>
-        </div>
-    );
-};
+        <Swiper
+            grabCursor={true}
+            effect={"creative"}
+            creativeEffect={{
+                prev: {
+                    shadow: true,
+                    translate: [0, 0, -400],
+                },
+                next: {
+                    translate: ["100%", 0, 0],
+                },
+            }}
+            modules={[EffectCreative, Autoplay]}
+            autoplay={{ delay: 3000 }}
+            className="mySwiper"
+        >
+            {content.map((item, index) => (
+                <SwiperSlide key={index}>
+                    <article className="product-article">
+                        <img src={item?.asset} alt="pro" />
+                        <h3>{item?.heading}</h3>
+                        <p>{item?.text}</p>
+                    </article>
+                </SwiperSlide>
+            ))}
 
-export default ProductImageSlider;
+        </Swiper>
+    );
+}
+
+
+// import Carousel from 'react-bootstrap/Carousel';
+
+// function ProductCrousel({ content }) {
+//     return (
+//         <section className='product-crousel'>
+//             <Carousel>
+//                 {content.map((item, index) => (
+//                     <>
+//                         <Carousel.Item key={index}>
+//                             <img
+//                                 className="w-100 product-image"
+//                                 src={item?.asset}
+//                                 alt={item?.asset}
+//                             />
+//                         </Carousel.Item>
+//                         <h3>{item?.heading}</h3>
+//                         <p>{item?.text}</p>
+//                     </>
+//                 ))}
+//             </Carousel>
+//         </section>
+//     );
+// }
+
+export default ProductCrousel;

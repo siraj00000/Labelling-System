@@ -70,30 +70,15 @@ const CreateProduct = ({ user }) => {
     };
 
     // selecting category and fetching related subcategories
-    const selectCategoryAndFetchData = data => {
+    const selectCategoryAndFetchData = async data => {
         try {
             let id = data.split(" ")[0];
             setCategoryId(id);
 
-            // Fetch SubCategory
-            let category_name = data.split(" ")[1];
-            let subURL = `/api/fetch-subcategory`;
-            fetchSubCategory(token, subURL)
-                .then(res => {
-                    let list = [];
-                    let data = res?.data?.data;
-                    for (let index = 0; index < data.length; index++) {
-                        const element = data[index];
-                        if (element.category_name === category_name) {
-                            list.push(element);
-                        }
-                    }
-                    setsubCategory(list);
-                })
-                .catch(error => {
-                    setError(error);
-                    removeStatus(setError);
-                });
+            // Fetching Subcategory where category id matches
+            let subURL = `/api/fetch-subcategory/${id}`;
+            const response = await fetchSubCategory(token, subURL);
+            setsubCategory(response.data.data);
         } catch (error) {
             setError(error);
             removeStatus(setError);

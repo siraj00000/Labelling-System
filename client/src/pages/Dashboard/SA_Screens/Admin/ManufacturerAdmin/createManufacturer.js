@@ -86,7 +86,7 @@ const CreateCompanyAdmin = () => {
                 title: "Success!",
                 text: response?.data?.msg,
                 icon: "success",
-                button: "Aww yiss!",
+                button: "Okay!",
             }).then(() => {
                 nav('/ls-admin/admins', { replace: true });
                 setLoading(false);

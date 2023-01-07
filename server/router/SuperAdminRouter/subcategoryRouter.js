@@ -7,12 +7,14 @@ const {
     updateSubCategory,
     deleteSubCategory,
     generateCSV,
-    fetchSubCategoryByCategory
+    fetchSubCatByCategory
 } = require("../../controller/SuperAdminCtrl/subcategoryCtrl");
 
-subCategoryRouter.post("/insert-subcategory", protect, authAdmin, insertSubCategory);
-subCategoryRouter.get("/fetch-subcategory", protect, fetchSubCategory);
-subCategoryRouter.put("/update-subcategory/:id", protect, authAdmin, updateSubCategory);
-subCategoryRouter.delete("/delete-subcategory/:id", protect, authAdmin, deleteSubCategory);
-subCategoryRouter.get("/generate-csv-subcat", protect, authAdmin, generateCSV);
+subCategoryRouter
+    .post("/insert-subcategory", protect, authAdmin, insertSubCategory)
+    .get("/fetch-subcategory", protect, fetchSubCategory)
+    .get("/fetch-subcategory/:parent_id", protect, fetchSubCatByCategory)
+    .put("/update-subcategory/:id", protect, authAdmin, updateSubCategory)
+    .delete("/delete-subcategory/:id", protect, authAdmin, deleteSubCategory)
+    .get("/generate-csv-subcat", protect, authAdmin, generateCSV);
 module.exports = subCategoryRouter;

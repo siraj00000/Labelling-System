@@ -25,19 +25,6 @@ const CreateLabel = ({ user }) => {
 
   // States for status 
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  const clearStates = () => {
-    setBrandId("");
-    setProductId("");
-    setProduct([]);
-    setVariant([]);
-    setProductVariant("");
-    setBatchNumber("");
-    setSerialNumber(0);
-    setTagNumber("");
-    setTagActiveStatus(true);
-  };
 
   React.useEffect(() => {
     const fetchData = () => {
@@ -74,6 +61,7 @@ const CreateLabel = ({ user }) => {
 
   const seletProductAndSetVariants = (data) => {
     if (data === "") return false;
+    console.log(data);
     let id = data.split(" ")[0];
     let variants = data.split(" ")[1].split(",");
     setProductId(id);
@@ -102,7 +90,7 @@ const CreateLabel = ({ user }) => {
             title: "Success!",
             text: res?.data?.msg,
             icon: "success",
-            button: "Aww yiss!",
+            button: "Okay!",
           }).then(() => {
             nav('/ls-admin/label', { replace: true });
             setLoading(false);
@@ -126,7 +114,6 @@ const CreateLabel = ({ user }) => {
     <form className='form-sec' onSubmit={submitLabelDataToCollection}>
       <CustomizeTitle text={'Create Label'} />
       {error !== '' && <Alert severity="error">{error}</Alert>}
-      {success !== '' && <Alert severity="success">{success}</Alert>}
       <div className='company_admin_form'>
         {/* BRANDS */}
         <div className='company_admin_form_field'>

@@ -10,31 +10,36 @@ export const CONNECTS = [
         Service: "Whatsapp",
         Icon: WhatsAppIcon,
         enableKey: "whatsapp_support",
-        info: "whatsapp_number"
+        info: "whatsapp_number",
+        asset: require("../assets/Product/whatsapp_people.jpg")
     },
     {
         Service: "Email",
         Icon: MailOutlineIcon,
         enableKey: "email_support",
-        info: "email_id"
+        info: "email_id",
+        asset: require("../assets/Product/instagram_people.jpg")
     },
     {
         Service: "Call",
         Icon: LocalPhoneIcon,
         enableKey: "call_support",
         info: "call_no",
+        asset: require("../assets/Product/twitter_people.jpg")
     },
     {
         Service: "Instagram",
         Icon: InstagramIcon,
         enableKey: "instagram",
         info: "insta_link",
+        asset: require("../assets/Product/instagram_people.jpg")
     },
     {
         Service: "facebook",
         Icon: FacebookIcon,
         enableKey: "facebook",
-        info: "fb_link"
+        info: "fb_link",
+        asset: require("../assets/Product/whatsapp_people.jpg")
     },
 ];
 

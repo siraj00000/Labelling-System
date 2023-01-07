@@ -17,7 +17,6 @@ import Splash from './components/splash';
 // Others
 const PageNotFound = lazy(() => import('./components/PageNotFound/404Notfound'));
 const UserPanel = lazy(() => import('./pages/UserPanel'));
-const ProductDisplayPage = lazy(() => import('./pages/UserPanel/PDPs/productDisplayPage'));
 const ProductPage = lazy(() => import('./pages/UserPanel/PDPs/product_display_page'));
 const WarrantyRegistration = lazy(() => import('./pages/UserPanel/WarrantyRegistration'));
 const ErrorReporting = lazy(() => import('./pages/UserPanel/ReportError'));
@@ -74,8 +73,16 @@ const App = () => {
       });
   }, []);
 
+  if (!window.navigator.onLine) return (
+    <div>
+      <h1>No internet Connection</h1>;
+      <button onClick={() => window.location.reload()}>Reload Page</button>
+    </div>
+  );
+
   {/* Error Responser */ }
   if (error) return <Alert severity="error">{error}</Alert>;
+
 
   return (
     <Suspense fallback={<Splash token={token} />}>
@@ -155,8 +162,7 @@ const App = () => {
             <Route path='/' element={<UserPanelLayout />}>
               <Route index element={<UserPanel />} />
               <Route path='/:type/:dsN' element={<Outlet />}>
-                <Route index element={<ProductDisplayPage />} />
-                <Route path="product" element={<ProductPage />} />
+                <Route index element={<ProductPage />} />
                 <Route path='register-warranty' element={<WarrantyRegistration />} />
                 <Route path='report-error' element={<ErrorReporting />} />
               </Route>

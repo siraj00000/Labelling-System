@@ -85,7 +85,7 @@ const UpdateProduct = () => {
                         title: "Success!",
                         text: res?.data?.msg,
                         icon: "success",
-                        button: "Aww yiss!",
+                        button: "Okay!",
                     }).then(() => setLoading(false));
                 })
                 .catch(error => {
@@ -159,7 +159,7 @@ const UpdateProduct = () => {
                         title: "Success!",
                         text: res?.data?.msg,
                         icon: "success",
-                        button: "Aww yiss!",
+                        button: "Okay!",
                     }).then(() => {
                         nav('/ls-admin/products', { replace: true });
                         setLoading(false);

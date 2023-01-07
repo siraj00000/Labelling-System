@@ -1,13 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./features.css";
-import { Col, Container, Row } from "react-bootstrap";
-import SliderComp from "../../../components/SlickCrousel/slider";
+import { Container } from "react-bootstrap";
 
 // icons
-import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 import StarIcon from "@mui/icons-material/Star";
-import WorkspacePremiumOutlinedIcon from "@mui/icons-material/WorkspacePremiumOutlined";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { token } from "../../../utils/actions";
@@ -15,6 +13,8 @@ import { verifyDSN } from "../../../utils/userActions";
 import Splash from "../../../components/splash";
 import { CONNECTS } from "../../../utils/data";
 import { merge } from "../../../utils/merging";
+import ProductServices from "../../../components/services";
+import ProductCrousel from "../../../components/Swiper";
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -77,8 +77,9 @@ const ProductPage = () => {
         let info = brand[CONNECTS[index].info];
         let name = CONNECTS[index].Service;
         let Icon = CONNECTS[index].Icon;
+        let asset = CONNECTS[index].asset;
 
-        services.push({ name, info, Icon });
+        services.push({ name, info, Icon, asset });
       }
     }
 
@@ -87,7 +88,13 @@ const ProductPage = () => {
 
   let services = useMemo(() => servicesToShow(), [productData]);
 
-  if (error) return <p>{error}</p>;
+  if (error)
+    return (
+      <section className="no-lable-container">
+        <ReportGmailerrorredIcon sx={{ color: "#0c0c1c", fontSize: 40 }} />
+        <p className="no-lable-error">{error}</p>
+      </section>
+    );
 
   if (productData?.length === 0) return <Splash token={true} />;
 
@@ -174,53 +181,13 @@ const ProductPage = () => {
         <button onClick={handleErrorReporting}>Report Error</button>
       </section>
 
-      <div className="spacer"></div>
-
       {/* Product Crousel */}
-      <SliderComp content={content} />
-
-      <div className="spacer"></div>
+      <ProductCrousel content={content} />
 
       <section className="features-section5">
-        <Row>
-          <Col>
-            <h1>Whatsapp</h1>
-            <p>Connect with us for resolving your product queries</p>
-            <button>Connect now</button>
-          </Col>
-          <Col>
-            <img
-              src={require("../../../assets/Product/whatsapp_people.jpg")}
-              alt=""
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <img
-              src={require("../../../assets/Product/instagram_people.jpg")}
-              alt=""
-            />
-          </Col>
-          <Col>
-            <h1>Instagram</h1>
-            <p>Connect with us for resolving your product queries</p>
-            <button>Connect now</button>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <h1>Twitter</h1>
-            <p>Connect with us for resolving your product queries</p>
-            <button>Connect now</button>
-          </Col>
-          <Col>
-            <img
-              src={require("../../../assets/Product/twitter_people.jpg")}
-              alt=""
-            />
-          </Col>
-        </Row>
+        {services?.map((item, index) => (
+          <ProductServices key={index} index={index} content={item} />
+        ))}
       </section>
     </Container>
   );

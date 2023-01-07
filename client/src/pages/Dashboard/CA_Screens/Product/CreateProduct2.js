@@ -207,7 +207,7 @@ const CreateProduct2 = () => {
                         title: "Success!",
                         text: res?.data?.msg,
                         icon: "success",
-                        button: "Aww yiss!",
+                        button: "Okay!",
                     }).then(() => {
                         nav('/ls-admin/products', { replace: true });
                         setLoading(false);

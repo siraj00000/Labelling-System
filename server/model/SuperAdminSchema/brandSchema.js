@@ -85,17 +85,13 @@ const brandSchema = new Schema({
     email_id: {
         type: String,
         default: null,
-        match: [
-            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-            `Please fill valid email address`
-        ],
     },
     call_support: {
         type: Boolean,
         default: false
     },
     call_no: {
-        type: Number,
+        type: String,
         trim: true,
         default: null
     },
@@ -104,7 +100,7 @@ const brandSchema = new Schema({
         default: false
     },
     whatsapp_number: {
-        type: Number,
+        type: String,
         trim: true,
         default: null
     },
@@ -133,4 +129,4 @@ const brandSchema = new Schema({
 );
 
 const Brand = model("brand", brandSchema);
-module.exports = Brand
+module.exports = Brand;

@@ -118,7 +118,7 @@ const EditBrand = () => {
                             title: "Success!",
                             text: res?.data?.msg,
                             icon: "success",
-                            button: "Aww yiss!",
+                            button: "Okay!",
                         }).then(() => {
                             nav('/ls-admin/brands', { replace: true });
                             setLoading(false);
@@ -185,7 +185,7 @@ const EditBrand = () => {
                         title: "Success!",
                         text: res?.data?.msg,
                         icon: "success",
-                        button: "Aww yiss!",
+                        button: "Okay!",
                     });
                 })
                 .catch(error => {

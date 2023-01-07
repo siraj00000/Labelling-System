@@ -74,6 +74,15 @@ const CreateBrand = () => {
             });
     }, []);
 
+    const validateEmail = () => {
+        const regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!regex.test(email_id)) {
+            setError("Please enter a valid email address");
+            return false;
+        }
+        return true;
+    };
+
     const verifyUploads = () => {
         if (__file.length === 0) {
             setError("Images not found!");
@@ -81,8 +90,12 @@ const CreateBrand = () => {
             return false;
         } else return true;
     };
+
     const insertBrandDetail = async (e) => {
         e.preventDefault();
+
+        let emailVerified = validateEmail();
+        if (!emailVerified) return;
 
         //TODO: Verify images and video uploads
         const verify = verifyUploads();
@@ -92,8 +105,8 @@ const CreateBrand = () => {
                 let emptyVideo = videoURL === '' && selectedVideo === '';
                 let reqBody = {
                     company_id, brand, brand_active_status, carousel_headings, carousel_text, product_description, authentication_feature,
-                    warranty, request_help, survey_feature, survey_link, promo_code, referrals, re_order_link, email_support, email_id,
-                    call_support, call_no, whatsapp_support, whatsapp_number, instagram, insta_link, facebook, fb_link, videoURL, emptyVideo
+                    warranty, request_help, survey_feature, survey_link, promo_code, referrals, re_order_link, email_support, email_id: `mailto:${email_id}`,
+                    call_support, call_no: `tel:${call_no}`, whatsapp_support, whatsapp_number: `https://wa.me/${whatsapp_number}`, instagram, insta_link, facebook, fb_link, videoURL, emptyVideo
                 };
 
                 const formData = new FormData();
@@ -109,7 +122,7 @@ const CreateBrand = () => {
                             title: "Success!",
                             text: res?.data?.msg,
                             icon: "success",
-                            button: "Aww yiss!",
+                            button: "Okay!",
                         }).then(() => {
                             nav('/ls-admin/brands', { replace: true });
                             setLoading(false);

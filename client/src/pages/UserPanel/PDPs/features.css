@@ -1,3 +1,21 @@
+/* No Label Error */
+
+.no-lable-container {
+  margin: 50px 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-lable-error{
+  font: 40px/40px bold;
+  margin-bottom: 0;
+  color: #0c0c1c;
+  border: 1px solid white;
+}
+
+/* x----------------x-------------------x */
+
 ._container {
   margin-top: 50px;
   padding: 0 10%;
@@ -96,6 +114,7 @@
 
 .features-section2 > img {
   width: 300px;
+  max-height: 200px;
   object-fit: contain;
 }
 
@@ -139,11 +158,6 @@
 }
 
 /* section5 */
-
-.features-section5 {
-  margin-top: 350px;
-}
-
 .features-section5 img {
   width: 100%;
   border-radius: 8px;
@@ -222,7 +236,7 @@
   width: 100%;
 }
 
-.feature_listing p{
+.feature_listing p {
   width: 50%;
 }
 

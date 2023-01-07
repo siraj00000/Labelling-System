@@ -1,11 +1,12 @@
 import { Alert } from '@mui/material';
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import swal from 'sweetalert';
 import { actionPost } from '../../../utils/userActions';
 import '../form.css';
 
 const OTPScreen = () => {
+    const navigate = useNavigate();
     const { state } = useLocation();
     const [otp, setOTP] = useState("");
     const [error, setError] = useState("");
@@ -16,6 +17,7 @@ const OTPScreen = () => {
             let URL = `/api/verify-otp`;
             const response = await actionPost(URL, { otp, user_id: state?.user_id });
             swal("Good job!", response?.data?.msg, "success");
+            navigate("/user/login")
         } catch (err) {
             setError(err);
         }

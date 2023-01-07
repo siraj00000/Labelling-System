@@ -55,6 +55,19 @@ const subCategoryCtrl = {
             next(error);
         }
     },
+    fetchSubCatByCategory: async (req, res, next) => {
+        try {
+            const { parent_id } = req.params;
+            const subcategory = await SubCategory.where({ parent_category_id: parent_id }).find();
+
+            res.status(200).json({
+                success: true,
+                data: subcategory
+            })
+        } catch (error) {
+            next(error);
+        }
+    },
     updateSubCategory: async (req, res, next) => {
         try {
             const { sub_category_active_status } = req.body;

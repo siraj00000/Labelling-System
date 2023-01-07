@@ -37,7 +37,7 @@ const EditCategory = () => {
                 title: "Success!",
                 text: response?.data?.msg,
                 icon: "success",
-                button: "Aww yiss!",
+                button: "Okay!",
             }).then(() => {
                 nav('/ls-admin/category', { replace: true });
                 setLoading(false);
