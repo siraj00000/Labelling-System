@@ -2,7 +2,7 @@
   "name": "labelling_system",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://34.220.188.74",
+  "proxy": "http://52.42.135.78",
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
