@@ -162,20 +162,17 @@ const ProductPage = () => {
         <p>{PRODUCT_DESCRIPTION}</p>
         <div>
           <div className="feature_listing">
-            <p>
-              {Object.entries(FEATURES_LIST).map(([key, value]) => (
-                <React.Fragment key={key + value}>
-                  <StarIcon
-                    sx={{
-                      color: "#2987C2FF",
-                      fontSize: "2rem",
-                      marginRight: "25px",
-                    }}
-                  />
-                  {value}
-                </React.Fragment>
-              ))}
-            </p>
+            {Object.entries(FEATURES_LIST).map(([key, value]) => (
+              <h6 key={key+value}>
+                <StarIcon
+                  sx={{
+                    color: "#2987C2FF",
+                    fontSize: "2rem",
+                  }}
+                />
+                {value}
+              </h6>
+            ))}
           </div>
         </div>
         <button onClick={handleErrorReporting}>Report Error</button>
