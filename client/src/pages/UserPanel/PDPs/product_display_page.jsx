@@ -19,7 +19,7 @@ import ProductCrousel from "../../../components/Swiper";
 const ProductPage = () => {
   const navigate = useNavigate();
   const { type, dsN } = useParams();
-  let userAuthToken = localStorage.getItem("_venls");
+  let userAuthToken = localStorage.getItem("endutoken");
   // States
   const [productDetail, setProductDetail] = useState({ data: [], error: "" });
   useEffect(() => {
